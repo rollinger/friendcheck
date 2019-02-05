@@ -12,11 +12,14 @@ class Friend(models.Model):
 
     fbid        = models.CharField(_('Facebook ID'), max_length=255)
 
-    description = models.TextField(_('Description'), null=True, blank=True,
+    notes       = models.TextField(_('Notes'), null=True, blank=True,
                 max_length=2000)
 
     avatar      = models.ImageField(_('Friend Avatar'),
                 upload_to='Friends/', null=True, blank=True)
+
+    #timestamp_array   = models.TextField(_('FB ID Ranked Data'), validators=[int_list_validator])
+    #rank_array   = models.TextField(_('FB ID Ranked Data'), validators=[int_list_validator])
 
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
@@ -31,4 +34,4 @@ class Datapoint(models.Model):
 
     datetime    = models.DateTimeField(_('Date Time'), auto_now_add=True)
 
-    fbid_data   = models.TextField(_('FB ID Rank Data'), validators=[int_list_validator])
+    fbid_data   = models.TextField(_('FB ID Ranked Data'), validators=[int_list_validator])
