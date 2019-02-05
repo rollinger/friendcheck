@@ -2,13 +2,24 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, ListView, RedirectView, UpdateView
+from django.views.generic import ListView #CreateView, DetailView, , RedirectView, UpdateView
 from django.views.generic.edit import FormView
 
 from facebook.forms import FacebookDatapointForm
-from facebook.models import Datapoint
+from facebook.models import Datapoint, Friend
 
-# Create your views here.
+# Overview View
+class FBOverviewView(LoginRequiredMixin, ListView):
+    template_name = 'facebook/start.html'
+    context_object_name = 'friend_list'
+
+    def get_queryset(self):
+        object_list = Friend.objects.filter(owner=self.request.user).order_by('last_rank')
+        return object_list
+
+facebook_overview_view = FBOverviewView.as_view()
+
+# Create FB Datapoint
 class CreateFBDatapointView(LoginRequiredMixin, FormView):
     template_name = 'facebook/add_datapoint.html'
     form_class = FacebookDatapointForm
@@ -33,7 +44,5 @@ class CreateFBDatapointView(LoginRequiredMixin, FormView):
         if fbid_data:
             self.create_datapoint(fbid_data)
         return super().form_valid(form)
-
-
 
 facebook_add_datapoint_view = CreateFBDatapointView.as_view()

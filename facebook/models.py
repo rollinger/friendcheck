@@ -29,11 +29,16 @@ class Friend(models.Model):
     ranks       = models.TextField(_('FB Rank Timeseries'),
                 null=True, blank=True, validators=[int_list_validator])
 
+    last_rank   = models.IntegerField(_('Last FB Rank'),null=True, blank=True,)
+
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
 
     def __str__(self):
         return "%s (%s)" % (self.name, self.fbid)
+
+    def get_facebook_id_url(self):
+        return 'https://www.facebook.com/'+str(self.fbid)
 
     #def get_absolute_url(self):
     #    return reverse("users:detail", kwargs={"username": self.username})
@@ -68,6 +73,7 @@ class Datapoint(models.Model):
             else:
                 friend.timestamps += ', ' + str(self.datetime)
                 friend.ranks += ', ' + str(rank)
+            friend.last_rank = rank
             # Save Friend Instance
             friend.save()
 

@@ -30,11 +30,16 @@ class FacebookDatapointForm(forms.Form):
             data_stream = ''
 
         # Extract the list of fbid from the data stream and clean up a bit
-        fbid_list = []
+        data = []
         if data_stream:
             data = data_stream.split('\",\"')
             data = [re.sub(r'-\d', '', d) for d in data]
             data = [int( re.sub(r'\"', '', d) ) for d in data]
-            fbid_list = list(set(data))
+
+        # Remove duplicate while maintain order
+        fbid_list = []
+        seen = set()
+        seen_add = seen.add
+        fbid_list = [x for x in data if not (x in seen or seen_add(x))]
 
         return fbid_list
