@@ -35,6 +35,6 @@ class FacebookDatapointForm(forms.Form):
             data = data_stream.split('\",\"')
             data = [re.sub(r'-\d', '', d) for d in data]
             data = [int( re.sub(r'\"', '', d) ) for d in data]
-            fbid_list = data
+            fbid_list = list(set(data))
 
         return fbid_list

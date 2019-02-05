@@ -4,7 +4,11 @@ from .models import Friend, Datapoint
 
 # Register your models here.
 class FriendAdmin(admin.ModelAdmin):
-     pass
+     list_display = ["name", "fbid", 'owner','timestamps', 'ranks']
+     list_display_links = ['fbid']
+     readonly_fields = ["owner", "fbid", 'timestamps', 'ranks']
+     search_fields = ['name','notes']
+     list_filter = ['owner',]
 
 admin.site.register(Friend, FriendAdmin)
 

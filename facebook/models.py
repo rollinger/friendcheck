@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -12,21 +14,35 @@ class Friend(models.Model):
 
     fbid        = models.CharField(_('Facebook ID'), max_length=255)
 
+    name        = models.CharField(_('Friend Name'),
+                null=True, blank=True, max_length=255)
+
     notes       = models.TextField(_('Notes'), null=True, blank=True,
                 max_length=2000)
 
     avatar      = models.ImageField(_('Friend Avatar'),
                 upload_to='Friends/', null=True, blank=True)
 
-    #timestamp_array   = models.TextField(_('FB ID Ranked Data'), validators=[int_list_validator])
-    #rank_array   = models.TextField(_('FB ID Ranked Data'), validators=[int_list_validator])
+    timestamps  = models.TextField(_('Sequential Timestamps of Data'),
+                null=True, blank=True,)
+
+    ranks       = models.TextField(_('FB Rank Timeseries'),
+                null=True, blank=True, validators=[int_list_validator])
 
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
 
+    def __str__(self):
+        return "%s (%s)" % (self.name, self.fbid)
+
     #def get_absolute_url(self):
     #    return reverse("users:detail", kwargs={"username": self.username})
 
+    class Meta:
+        verbose_name = _('Friend')
+        verbose_name_plural = _('Friends')
+        ordering = ['-fbid']
+        unique_together = ("owner","fbid")
 
 
 class Datapoint(models.Model):
@@ -44,12 +60,19 @@ class Datapoint(models.Model):
     def save(self, *args, **kwargs):
         # Save this object and then creates or updates the Friend objects
         super(Datapoint, self).save(*args, **kwargs)
-        for fbid in self.fbid_data:
-            pass
-            #friend, created = Friend.get_or_create(owner=self.owner,fbid=fbid)
-            #print(fbid)
+        for rank, fbid in enumerate(self.fbid_data):
+            friend, created = Friend.objects.get_or_create(owner=self.owner,fbid=fbid)
+            if created:
+                friend.timestamps = str(self.datetime)
+                friend.ranks = int(rank)
+            else:
+                friend.timestamps += ', ' + str(self.datetime)
+                friend.ranks += ', ' + str(rank)
+            # Save Friend Instance
+            friend.save()
 
     class Meta:
         verbose_name = _('Datapoint')
         verbose_name_plural = _('Datapoints')
         ordering = ['datetime']
+        unique_together = ("owner","datetime")
