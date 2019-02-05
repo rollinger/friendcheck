@@ -35,3 +35,5 @@ class Datapoint(models.Model):
     datetime    = models.DateTimeField(_('Date Time'), auto_now_add=True)
 
     fbid_data   = models.TextField(_('FB ID Ranked Data'), validators=[int_list_validator])
+
+    ownership_check = models.BooleanField(_('The uploaded data is mine.'), default=False)
