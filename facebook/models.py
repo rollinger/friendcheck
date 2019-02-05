@@ -36,4 +36,20 @@ class Datapoint(models.Model):
 
     fbid_data   = models.TextField(_('FB ID Ranked Data'), validators=[int_list_validator])
 
-    ownership_check = models.BooleanField(_('The uploaded data is mine.'), default=False)
+    ownership_check = models.BooleanField(_('Ownership of Data confirmed by User'), default=False)
+
+    def __str__(self):
+        return "%s: %s" % (self.owner.username, self.datetime)
+
+    def save(self, *args, **kwargs):
+        # Save this object and then creates or updates the Friend objects
+        super(Datapoint, self).save(*args, **kwargs)
+        for fbid in self.fbid_data:
+            pass
+            #friend, created = Friend.get_or_create(owner=self.owner,fbid=fbid)
+            #print(fbid)
+
+    class Meta:
+        verbose_name = _('Datapoint')
+        verbose_name_plural = _('Datapoints')
+        ordering = ['datetime']
