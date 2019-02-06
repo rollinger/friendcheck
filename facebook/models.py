@@ -1,4 +1,4 @@
-import json
+import json, re
 
 from django.db import models
 from django.urls import reverse
@@ -36,7 +36,10 @@ class Friend(models.Model):
 
     def get_rank_timeseries(self):
         # Returns the timeseries of rank data for the friend
-        return self.ranks
+        timestamps = [re.sub(r'\..*', '', d) for d in self.timestamps.split(', ')]
+        ranks = [int(d) for d in self.ranks.split(', ')]
+        timeseries = {'timestamps':timestamps, 'ranks':ranks}
+        return timeseries
 
     def __str__(self):
         return "%s (%s)" % (self.name, self.fbid)

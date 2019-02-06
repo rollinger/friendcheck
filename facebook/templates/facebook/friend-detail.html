@@ -39,7 +39,58 @@
   </div>
   <div class="row">
     <div class="col-sm-12">
-      {{ friend.get_rank_timeseries }}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+
+      <canvas id="friendRankChart"></canvas>
+
+      <script>
+          var ctx = document.getElementById("friendRankChart");
+          var friendRankChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: {{ friend.get_rank_timeseries.timestamps|safe }},
+              datasets: [{
+                label: 'Rank',
+                data: {{ friend.get_rank_timeseries.ranks|safe }},
+              }],
+            },
+            options: {
+              fill: false,
+              responsive: true,
+              title: {
+                display: true,
+                text: 'Rank Timeseries'
+              },
+              scales: {
+                  xAxes: [{
+                      type: 'time',
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: "Date",
+                      }
+                  }],
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero: true,
+                          reverse:true,
+                      },
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: "Rank",
+                      }
+                  }]
+                }
+              }
+          });
+      </script>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      {{ friend.get_rank_timeseries.timestamps }}</br>
+      {{ friend.get_rank_timeseries.ranks }}
     </div>
   </div>
 </div>
