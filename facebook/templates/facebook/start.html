@@ -53,19 +53,19 @@
               <th scope="row">{{ friend.last_rank }}</th>
               <td>
                 {% if friend.avatar %}
-                    <img src="{{ MEDIA_URL }}{{ friend.avatar }}" alt="{{ product.name }}" class="img-rounded img-responsive center-block" style="max-width:120px;">
+                    <img src="{{ MEDIA_URL }}{{ friend.avatar }}" alt="{{ friend.name }}" class="img-rounded img-responsive center-block" style="max-width:120px;">
                 {% endif %}
               </td>
               <td>{{ friend.name|default_if_none:"--" }}</td>
               <td>{{ friend.notes|default_if_none:"--" }}</td>
               <td id="fburl-{{friend.last_rank}}">{{ friend.get_facebook_id_url }}</td>
               <td>
-                <button type="button" class="btn btn-light btn-block" onclick="document.getElementById('fburl-{{friend.last_rank}}').select(); document.execCommand('copy');">
+                <button type="button" class="btn btn-light btn-block" onclick="">
                   {% trans 'Copy Link' %}
                 </button>
-                <button type="button" class="btn btn-light btn-block">
+                <a type="button" class="btn btn-light btn-block" href="{{ friend.get_absolute_url }}">
                   {% trans 'Details' %}
-                </button>
+                </a>
               </td>
             </tr>
           {% endfor %}

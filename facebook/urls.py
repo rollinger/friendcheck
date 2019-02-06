@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from facebook.views import (
     facebook_add_datapoint_view,
     facebook_overview_view,
+    facebook_friend_view,
 #    user_list_view,
 #    user_redirect_view,
 #    user_update_view,
@@ -12,10 +13,9 @@ from facebook.views import (
 
 app_name = "facebook"
 urlpatterns = [
-    #path("", TemplateView.as_view(template_name="facebook/start.html"), name="overview"),
     path("", view=facebook_overview_view, name="overview"),
-
     path("~add_datapoint/", view=facebook_add_datapoint_view, name="add_datapoint"),
+    path("friend/<int:pk>/", view=facebook_friend_view, name="friend-detail"),
 
     #path("", view=user_list_view, name="list"),
     #path("~redirect/", view=user_redirect_view, name="redirect"),

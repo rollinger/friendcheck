@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}Friend{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-3">
+      {% if friend.avatar %}
+          <img src="{{ MEDIA_URL }}{{ friend.avatar }}" alt="{{ friend.name }}" class="img-rounded img-responsive center-block" style="max-width:180px;">
+      {% endif %}
+    </div>
+    <div class="col-sm-9">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12"><h1>{{ object.name }}</h1></div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">{% trans 'Profile Link' %}</div>
+          <div class="col-sm-6">{{ friend.get_facebook_id_url }}</div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">{% trans 'Notes' %}</div>
+          <div class="col-sm-6">{{ friend.notes|default_if_none:"--" }}</div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">{% trans 'Current Rank' %}</div>
+          <div class="col-sm-6">{{ friend.last_rank}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12"><h2>{% trans 'Chart' %}</h2></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      {{ friend.get_rank_timeseries }}
+    </div>
+  </div>
+</div>
+{% endblock content %}

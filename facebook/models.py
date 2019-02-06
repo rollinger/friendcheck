@@ -34,14 +34,19 @@ class Friend(models.Model):
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
 
+    def get_rank_timeseries(self):
+        # Returns the timeseries of rank data for the friend
+        return self.ranks
+
     def __str__(self):
         return "%s (%s)" % (self.name, self.fbid)
 
     def get_facebook_id_url(self):
+        # returns the url of the profile on facebook
         return 'https://www.facebook.com/'+str(self.fbid)
 
-    #def get_absolute_url(self):
-    #    return reverse("users:detail", kwargs={"username": self.username})
+    def get_absolute_url(self):
+        return reverse("facebook:friend-detail", kwargs={"pk": self.pk})
 
     class Meta:
         verbose_name = _('Friend')
