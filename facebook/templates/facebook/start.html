@@ -20,32 +20,31 @@
 <div class="container">
   <ul class="nav nav-tabs" id="facebookTab" role="tablist">
     <li class="nav-item">
-      <a class="nav-link active" id="chart-tab" data-toggle="tab" href="#chart" role="tab" aria-controls="home" aria-selected="false">
-        {% trans 'Chart' %}
-      </a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" id="friends-tab" data-toggle="tab" href="#friends" role="tab" aria-controls="home" aria-selected="false">
+      <a class="nav-link active" id="friends-tab" data-toggle="tab" href="#friends" role="tab" aria-controls="home" aria-selected="true">
         {% trans 'Friends' %}
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" id="chart-tab" data-toggle="tab" href="#chart" role="tab" aria-controls="home" aria-selected="false">
+        {% trans 'Chart' %}
+      </a>
+    </li>
+
   </ul>
 
   <div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade show active" id="chart" role="tabpanel" aria-labelledby="chart-tab">
-      <h3>{% trans 'Chart' %}</h3>
-    </div>
-    <div class="tab-pane fade" id="friends" role="tabpanel" aria-labelledby="friends-tab">
+
+    <div class="tab-pane fade show active" id="friends" role="tabpanel" aria-labelledby="friends-tab">
       <h3>{% trans 'Friends' %}</h3>
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">Current Rank</th>
-            <th scope="col">Image</th>
-            <th scope="col">Name</th>
-            <th scope="col">Notes</th>
-            <th scope="col">Link to Profile</th>
-            <th scope="col">Actions</th>
+            <th scope="col">{% trans 'Current Rank' %}</th>
+            <th scope="col">{% trans 'Picture' %}</th>
+            <th scope="col">{% trans 'Name' %}</th>
+            <th scope="col">{% trans 'Notes' %}</th>
+            <th scope="col">{% trans 'Profile Link' %}</th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -59,12 +58,22 @@
               </td>
               <td>{{ friend.name|default_if_none:"--" }}</td>
               <td>{{ friend.notes|default_if_none:"--" }}</td>
-              <td>{{ friend.get_facebook_id_url }}</td>
-              <td>View | Edit</td>
+              <td id="fburl-{{friend.last_rank}}">{{ friend.get_facebook_id_url }}</td>
+              <td>
+                <button type="button" class="btn btn-light btn-block" onclick="document.getElementById('fburl-{{friend.last_rank}}').select(); document.execCommand('copy');">
+                  {% trans 'Copy Link' %}
+                </button>
+                <button type="button" class="btn btn-light btn-block">
+                  {% trans 'Details' %}
+                </button>
+              </td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
+    </div>
+    <div class="tab-pane fade" id="chart" role="tabpanel" aria-labelledby="chart-tab">
+      <h3>{% trans 'Chart' %}</h3>
     </div>
   </div>
 </div>
