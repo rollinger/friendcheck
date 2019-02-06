@@ -5,13 +5,13 @@
 
 {% block content %}
 <div class="container">
-  <div class="row">
+  <div class="row align-items-center">
     <div class="col-sm-9">
       <h1>Check your Facebook Friends</h1>
     </div>
     <div class="col-sm-3">
-      <a href="{% url 'facebook:add_datapoint' %}" class="">
-        <h4 class="">{% trans 'Add New Data' %}</h4>
+      <a href="{% url 'facebook:add_datapoint' %}" type="button" class="btn btn-success btn-block">
+        {% trans 'Add New Data' %}
       </a>
     </div>
   </div>
