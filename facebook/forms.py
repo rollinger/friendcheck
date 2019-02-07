@@ -3,7 +3,13 @@ import re
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from facebook.models import Friend
 
+class FriendUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Friend
+        fields = ['name', 'avatar',]
+        # TODO: Add notes
 
 class FacebookDatapointForm(forms.Form):
     ownership_check = forms.BooleanField(

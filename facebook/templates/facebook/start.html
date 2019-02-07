@@ -50,7 +50,7 @@
         <tbody>
           {% for friend in friend_list %}
             <tr>
-              <th scope="row">{{ friend.last_rank }}</th>
+              <th scope="row">{{ friend.last_rank }} ({{friend.volatility}})</th>
               <td>
                 {% if friend.avatar %}
                     <img src="{{ MEDIA_URL }}{{ friend.avatar }}" alt="{{ friend.name }}" class="img-rounded img-responsive center-block" style="max-width:120px;">

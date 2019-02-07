@@ -2,15 +2,16 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.views.generic import ListView, DetailView #CreateView, DetailView, , RedirectView, UpdateView
+from django.views.generic import ListView, DetailView, UpdateView #CreateView, DetailView, , RedirectView, UpdateView
 from django.views.generic.edit import FormView
 
-from facebook.forms import FacebookDatapointForm
+from facebook.forms import FacebookDatapointForm, FriendUpdateForm
 from facebook.models import Datapoint, Friend
 
 # Displays the data about one friend
-class FriendDetailView(LoginRequiredMixin, DetailView):
+class FriendDetailView(LoginRequiredMixin, UpdateView):
     model = Friend
+    form_class = FriendUpdateForm
     template_name = 'facebook/friend-detail.html'
 
 facebook_friend_view = FriendDetailView.as_view()

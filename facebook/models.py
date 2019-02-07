@@ -1,4 +1,5 @@
 import json, re
+from itertools import tee#, zip
 
 from django.db import models
 from django.urls import reverse
@@ -7,6 +8,11 @@ from django.core.validators import int_list_validator
 
 from friendcheck.users.models import User
 
+def pairwise(iterable):
+    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 
 class Friend(models.Model):
@@ -33,6 +39,20 @@ class Friend(models.Model):
 
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
+
+    def absolute_volatility(self):
+        volatility = 0
+        ranks = [int(d) for d in self.ranks.split(', ')]
+        for a, b in pairwise(ranks):
+            volatility += abs(a-b)
+        return volatility
+
+    def volatility(self):
+        volatility = 0
+        ranks = [int(d) for d in self.ranks.split(', ')]
+        for a, b in pairwise(ranks):
+            volatility += (a-b)
+        return volatility
 
     def get_rank_timeseries(self):
         # Returns the timeseries of rank data for the friend

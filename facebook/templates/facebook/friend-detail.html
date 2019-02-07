@@ -1,42 +1,81 @@
 {% extends "base.html" %}
-{% load static i18n %}
+{% load crispy_forms_tags static i18n %}
 
 {% block title %}Friend{% endblock %}
 
 {% block content %}
 <div class="container">
-  <div class="row">
-    <div class="col-sm-3">
-      {% if friend.avatar %}
-          <img src="{{ MEDIA_URL }}{{ friend.avatar }}" alt="{{ friend.name }}" class="img-rounded img-responsive center-block" style="max-width:180px;">
-      {% endif %}
-    </div>
-    <div class="col-sm-9">
+  <ul class="nav nav-tabs" id="facebookTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="friends-tab" data-toggle="tab" href="#friends" role="tab" aria-controls="home" aria-selected="true">
+        {% trans 'Friend' %}
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab" aria-controls="home" aria-selected="false">
+        {% trans 'Edit' %}
+      </a>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="friends" role="tabpanel" aria-labelledby="friends-tab">
       <div class="container">
         <div class="row">
-          <div class="col-sm-12"><h1>{{ object.name }}</h1></div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6">{% trans 'Profile Link' %}</div>
-          <div class="col-sm-6">{{ friend.get_facebook_id_url }}</div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6">{% trans 'Notes' %}</div>
-          <div class="col-sm-6">{{ friend.notes|default_if_none:"--" }}</div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6">{% trans 'Current Rank' %}</div>
-          <div class="col-sm-6">{{ friend.last_rank}}</div>
+          <div class="col-sm-3">
+            {% if friend.avatar %}
+              <img src="{{ MEDIA_URL }}{{ friend.avatar }}" alt="{{ friend.name }}" class="img-rounded img-responsive center-block" style="max-width:180px;">
+            {% else %}
+              <img src='{% static "images/facebook/incognito-friend-profile-picture.png" %}' alt="{{ friend.name }}" class="img-rounded img-responsive center-block" style="max-width:180px;">
+            {% endif %}
+          </div>
+          <div class="col-sm-9">
+            <div class="container">
+              <div class="row">
+                <div class="col-sm-12"><h1>{{ object.name|default_if_none:"--" }}</h1></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">{% trans 'Profile Link' %}</div>
+                <div class="col-sm-6">{{ friend.get_facebook_id_url }}</div>
+              </div>
+              <!--div class="row">
+                <div class="col-sm-6">{% trans 'Notes' %}</div>
+                <div class="col-sm-6">{{ friend.notes|default_if_none:"--" }}</div>
+              </div-->
+              <div class="row">
+                <div class="col-sm-6">{% trans 'Current Rank' %}</div>
+                <div class="col-sm-6">{{ friend.last_rank}}</div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">{% trans 'Total Movement' %}</div>
+                <div class="col-sm-6">{{ friend.volatility}}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="friends-tab">
+      <form class="form-horizontal" enctype="multipart/form-data" method="post" action="{{ request.get_full_path }}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="control-group">
+          <div class="controls">
+            <button type="submit" class="btn">{% trans 'Update Friend' %}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
   </div>
-</div>
+
+
 
 <div class="container">
-  <div class="row">
+  <!--div class="row">
     <div class="col-sm-12"><h2>{% trans 'Chart' %}</h2></div>
-  </div>
+  </div-->
   <div class="row">
     <div class="col-sm-12">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
@@ -51,6 +90,7 @@
               labels: {{ friend.get_rank_timeseries.timestamps|safe }},
               datasets: [{
                 label: 'Rank',
+                fill: false,
                 data: {{ friend.get_rank_timeseries.ranks|safe }},
               }],
             },
@@ -87,11 +127,15 @@
       </script>
     </div>
   </div>
+
+  {% if debug %}
   <div class="row">
     <div class="col-sm-12">
       {{ friend.get_rank_timeseries.timestamps }}</br>
       {{ friend.get_rank_timeseries.ranks }}
     </div>
   </div>
+  {% endif %}
+
 </div>
 {% endblock content %}
