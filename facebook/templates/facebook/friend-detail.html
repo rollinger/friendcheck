@@ -91,6 +91,10 @@
               datasets: [{
                 label: 'Rank',
                 fill: false,
+                lineTension: 0,
+                borderColor: '#3b5998',
+                backgroundColor: '#8b9dc3',
+                pointRadius: 9,
                 data: {{ friend.get_rank_timeseries.ranks|safe }},
               }],
             },
@@ -105,10 +109,16 @@
                   xAxes: [{
                       type: 'time',
                       display: true,
+                      distribution: 'linear', //series
                       scaleLabel: {
                           display: true,
                           labelString: "Date",
-                      }
+                      },
+                      time: {
+                        displayFormats: {
+                          hour: 'YYYY MMM DD hA'
+                        }
+                      },
                   }],
                   yAxes: [{
                       ticks: {
