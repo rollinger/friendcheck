@@ -89,12 +89,13 @@
             data: {
               labels: {{ friend.get_rank_timeseries.timestamps|safe }},
               datasets: [{
-                label: 'Rank',
+                label: '{{friend}} Rank',
                 fill: false,
                 lineTension: 0,
                 borderColor: '#3b5998',
                 backgroundColor: '#8b9dc3',
                 pointRadius: 9,
+                pointHoverRadius: 12,
                 data: {{ friend.get_rank_timeseries.ranks|safe }},
               }],
             },
@@ -104,6 +105,9 @@
               title: {
                 display: true,
                 text: 'Rank Timeseries'
+              },
+              legend: {
+                display: false,
               },
               scales: {
                   xAxes: [{

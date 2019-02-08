@@ -1,9 +1,12 @@
 {% extends "base.html" %}
-{% load static i18n %}
+{% load static i18n index %}
 
 {% block title %}Facebook Friendcheck{% endblock %}
 
 {% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+
+
 <div class="container">
   <div class="row align-items-center">
     <div class="col-sm-9">
@@ -25,8 +28,13 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="chart-tab" data-toggle="tab" href="#chart" role="tab" aria-controls="home" aria-selected="false">
-        {% trans 'Chart' %}
+      <a class="nav-link" id="chart-tab" data-toggle="tab" href="#chart-rank-50" role="tab" aria-controls="home" aria-selected="false">
+        {% trans 'Top 5 Ranks' %}
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="chart-tab" data-toggle="tab" href="#chart-movement-50" role="tab" aria-controls="home" aria-selected="false">
+        {% trans 'Top 5 Movement' %}
       </a>
     </li>
 
@@ -39,10 +47,10 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">{% trans 'Current Rank' %}</th>
-            <th scope="col">{% trans 'Picture' %}</th>
+            <th scope="col">{% trans 'Rank' %}</th>
+            <th scope="col">{% trans 'Movement' %}</th>
             <th scope="col">{% trans 'Name' %}</th>
-            <th scope="col">{% trans 'Notes' %}</th>
+            <th scope="col">{% trans 'Picture' %}</th>
             <th scope="col">{% trans 'Profile Link' %}</th>
             <th scope="col"></th>
           </tr>
@@ -50,14 +58,14 @@
         <tbody>
           {% for friend in friend_list %}
             <tr>
-              <th scope="row">{{ friend.last_rank }} ({{friend.volatility}})</th>
+              <th scope="row">{{ friend.last_rank }}</th>
+              <td>{{ friend.volatility }}</td>
+              <td>{{ friend.name|default_if_none:"--" }}</td>
               <td>
                 {% if friend.avatar %}
                     <img src="{{ MEDIA_URL }}{{ friend.avatar }}" alt="{{ friend.name }}" class="img-rounded img-responsive center-block" style="max-width:120px;">
                 {% endif %}
               </td>
-              <td>{{ friend.name|default_if_none:"--" }}</td>
-              <td>{{ friend.notes|default_if_none:"--" }}</td>
               <td id="fburl-{{friend.last_rank}}">{{ friend.get_facebook_id_url }}</td>
               <td>
                 <button type="button" class="btn btn-light btn-block" onclick="">
@@ -72,10 +80,108 @@
         </tbody>
       </table>
     </div>
-    <div class="tab-pane fade" id="chart" role="tabpanel" aria-labelledby="chart-tab">
-      <h3>{% trans 'Chart' %}</h3>
+
+    <div class="tab-pane fade" id="chart-rank-50" role="tabpanel" aria-labelledby="chart-tab">
+      <h3>{% trans 'Top 5 Ranks' %}</h3>
+      <canvas id="top5RankChart"></canvas>
+      <script>
+          var ctx = document.getElementById("top5RankChart");
+          var top5RankChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              //labels: {{ friend_list.1.get_rank_timeseries.timestamps|safe }},
+              datasets: [
+              {% for friend in friend_list|slice:":5 " %}
+                {
+                  label: '{{friend}} Rank',
+                  fill: false,
+                  lineTension: 0,
+                  //borderColor: '#3b5998',
+                  //backgroundColor: '#8b9dc3',
+                  pointRadius: 9,
+                  pointHoverRadius: 12,
+                  //data: {{ friend.get_rank_timeseries.ranks|safe }},
+                  data: [
+                    {% for datapoint in friend.get_rank_timeseries.timestamps %}
+                      {
+                        x: '{{ datapoint }}',
+                        y: {{ friend.get_rank_timeseries.ranks|index:forloop.counter0 }}
+                      },
+                    {% endfor %}
+                  ],
+                },
+              {% endfor %}
+              ]
+            },
+            options: {
+              fill: false,
+              responsive: true,
+              title: {
+                display: true,
+                text: 'Rank Timeseries'
+              },
+              legend: {
+                display: false,
+              },
+              scales: {
+                  xAxes: [{
+                      type: 'time',
+                      display: true,
+                      distribution: 'linear', //series
+                      scaleLabel: {
+                          display: true,
+                          labelString: "Date",
+                      },
+                      time: {
+                        displayFormats: {
+                          hour: 'YYYY MMM DD hA'
+                        }
+                      },
+                  }],
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero: true,
+                          reverse:true,
+                      },
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: "Rank",
+                      }
+                  }]
+                }
+              }
+          });
+      </script>
+
+      {% if debug %}
+      <div class="row">
+        <div class="col-sm-12">
+          {% for friend in friend_list|slice:":5 " %}
+            {% for datapoint in friend.get_rank_timeseries.timestamps %}
+              {{ friend }}</br>
+              {{ datapoint }}: {{ friend.get_rank_timeseries.ranks|index:forloop.counter0 }}
+              </br>
+            {% endfor %}
+            {{ friend.get_rank_timeseries.timestamps }}
+            {{ friend.get_rank_timeseries.ranks }}<br/>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+
     </div>
+
+
+    <div class="tab-pane fade" id="chart-movement-50" role="tabpanel" aria-labelledby="chart-tab">
+      <h3>{% trans 'Top 5 Movement' %}</h3>
+      <canvas id="top5MovementChart"></canvas>
+    </div>
+
   </div>
 </div>
+
+
 
 {% endblock content %}

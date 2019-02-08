@@ -32,7 +32,7 @@ class Friend(models.Model):
     timestamps  = models.TextField(_('Sequential Timestamps of Data'),
                 null=True, blank=True,)
 
-    ranks       = models.TextField(_('FB Rank Timeseries'),
+    _ranks       = models.TextField(_('FB Rank Timeseries'),
                 null=True, blank=True, validators=[int_list_validator])
 
     last_rank   = models.IntegerField(_('Last FB Rank'),null=True, blank=True,)
@@ -40,29 +40,39 @@ class Friend(models.Model):
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
 
+    def set_ranks(self, val):
+        self._ranks = val
+
+    def get_ranks(self):
+        # Deserializes the text to array of int
+        return [int(d) for d in self._ranks.split(', ')]
+
+    ranks = property(get_ranks, set_ranks)
+
+
     def absolute_volatility(self):
         volatility = 0
-        ranks = [int(d) for d in self.ranks.split(', ')]
-        for a, b in pairwise(ranks):
+        for a, b in pairwise(self.ranks):
             volatility += abs(a-b)
         return volatility
 
     def volatility(self):
         volatility = 0
-        ranks = [int(d) for d in self.ranks.split(', ')]
-        for a, b in pairwise(ranks):
+        for a, b in pairwise(self.ranks):
             volatility += (a-b)
         return volatility
 
     def get_rank_timeseries(self):
         # Returns the timeseries of rank data for the friend
         timestamps = [re.sub(r'\..*', '', d) for d in self.timestamps.split(', ')]
-        ranks = [int(d) for d in self.ranks.split(', ')]
-        timeseries = {'timestamps':timestamps, 'ranks':ranks}
+        timeseries = {'timestamps':timestamps, 'ranks':self.ranks}
         return timeseries
 
     def __str__(self):
-        return "%s (%s)" % (self.name, self.fbid)
+        if self.name:
+            return "%s (%s)" % (self.name, self.fbid)
+        else:
+            return "%s" % self.fbid
 
     def get_facebook_id_url(self):
         # returns the url of the profile on facebook
