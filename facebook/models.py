@@ -31,17 +31,43 @@ class Friend(models.Model):
     avatar      = models.ImageField(_('Friend Avatar'),
                 upload_to='Friends/', null=True, blank=True)
 
-    timestamps  = ArrayField(models.DateTimeField(),default=[])
+    timestamps  = ArrayField(models.DateTimeField(),null=True, blank=True)
 
-    ranks       = ArrayField(models.IntegerField(),default=[])
+    ranks       = ArrayField(models.IntegerField(),null=True, blank=True)
 
-    volatility  = ArrayField(models.IntegerField(),default=[])
+    last_rank   = models.IntegerField(_('Current Rank'),null=True, blank=True)
 
-    social_signals = ArrayField(models.IntegerField(),default=[])
+    volatility  = ArrayField(models.IntegerField(),null=True, blank=True)
+
+    social_signals = ArrayField(models.IntegerField(),null=True, blank=True)
 
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
 
+    def add_datapoint(self, timestamp, rank):
+        # Find index of timestamp
+        try:
+            idx = self.timestamps.index(timestamp)
+        except:
+            idx = None
+
+        # Append or update rank at index
+        if idx == None:
+            if self.timestamps == None:
+                # New Array
+                self.timestamps = [timestamp]
+                self.ranks = [rank]
+            else:
+                # Append to Array
+                self.timestamps.append(timestamp)
+                self.ranks.append(rank)
+        else:
+            # Modify Rank at found index
+            self.ranks[idx] = rank
+        # calculate volatility and social_signals
+        # Save the object
+        self.last_rank = self.ranks[-1]
+        self.save()
 
     def absolute_volatility(self):
         volatility = 0
@@ -57,7 +83,8 @@ class Friend(models.Model):
 
     def get_rank_timeseries(self):
         # Returns the timeseries of rank data for the friend
-        timestamps = [re.sub(r'\..*', '', d) for d in self.timestamps.split(', ')]
+        #timestamps = [re.sub(r'\..*', '', d) for d in self.timestamps.split(', ')]
+        timestamps = [ t.strftime("%Y-%m-%d %H:%M:%S") for t in self.timestamps]
         timeseries = {'timestamps':timestamps, 'ranks':self.ranks}
         return timeseries
 
@@ -86,34 +113,41 @@ class Datapoint(models.Model):
 
     datetime    = models.DateTimeField(_('Date Time'))
 
-    # https://docs.djangoproject.com/en/2.1/ref/contrib/postgres/fields/
-    fbid_data   = ArrayField(models.IntegerField(),default=[])
+    fbid_data   = models.TextField(_('FB ID List'), null=True, blank=True,
+                help_text=_('Expects comma-seperated list of facebook ids'))
 
     ownership_check = models.BooleanField(_('Ownership of Data confirmed by User'), default=False)
 
     integrated  = models.BooleanField(_('Datapoint is integrated in Friends'), default=False)
 
+    created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
+    updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
+
     def __str__(self):
         return "%s: %s" % (self.owner.username, self.datetime)
 
     def integrate_datapoint(self):
-        # Adds the datapoints to Friends or updates it if the timestamp present.
-        pass
+        # Extract fbid's from text field
+        data = re.findall('\"(\d*)-\d\"', self.fbid_data )
+        data = [int( d ) for d in data]
+        # Remove duplicates while maintain order
+        fbid_list = []
+        seen = set()
+        seen_add = seen.add
+        fbid_list = [x for x in data if not (x in seen or seen_add(x))]
+        # Adds each datapoints to Friends or updates it if the timestamp present.
+        for rank, fbid in enumerate(fbid_list):
+            #print('%s:%d' % (fbid,rank+1) )
+            friend, created = Friend.objects.get_or_create(owner=self.owner,fbid=fbid)
+            friend.add_datapoint(timestamp=self.datetime,rank=rank+1)
 
     def save(self, *args, **kwargs):
-        # Save this object and then creates or updates the Friend objects
         super(Datapoint, self).save(*args, **kwargs)
-        #for rank, fbid in enumerate(self.fbid_data):
-        #    friend, created = Friend.objects.get_or_create(owner=self.owner,fbid=fbid)
-        #    if created:
-        #        friend.timestamps = str(self.datetime)
-        #        friend.ranks = int(rank)
-        #    else:
-        #        friend.timestamps += ', ' + str(self.datetime)
-        #        friend.ranks += ', ' + str(rank)
-        #    friend.last_rank = rank
-        #    # Save Friend Instance
-        #    friend.save()
+        # call integrate_datapoint (LATER: Asnc, delayed execution)
+        if not self.integrated:
+            self.integrate_datapoint()
+            self.integrated=True
+            super(Datapoint, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('Datapoint')
