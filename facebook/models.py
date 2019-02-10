@@ -1,7 +1,9 @@
 import json, re
-from itertools import tee#, zip
+from itertools import tee
 
 from django.db import models
+# https://docs.djangoproject.com/en/2.1/ref/contrib/postgres/fields/
+from django.contrib.postgres.fields import ArrayField
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import int_list_validator
@@ -29,25 +31,16 @@ class Friend(models.Model):
     avatar      = models.ImageField(_('Friend Avatar'),
                 upload_to='Friends/', null=True, blank=True)
 
-    timestamps  = models.TextField(_('Sequential Timestamps of Data'),
-                null=True, blank=True,)
+    timestamps  = ArrayField(models.DateTimeField(),default=[])
 
-    _ranks       = models.TextField(_('FB Rank Timeseries'),
-                null=True, blank=True, validators=[int_list_validator])
+    ranks       = ArrayField(models.IntegerField(),default=[])
 
-    last_rank   = models.IntegerField(_('Last FB Rank'),null=True, blank=True,)
+    volatility  = ArrayField(models.IntegerField(),default=[])
+
+    social_signals = ArrayField(models.IntegerField(),default=[])
 
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
-
-    def set_ranks(self, val):
-        self._ranks = val
-
-    def get_ranks(self):
-        # Deserializes the text to array of int
-        return [int(d) for d in self._ranks.split(', ')]
-
-    ranks = property(get_ranks, set_ranks)
 
 
     def absolute_volatility(self):
@@ -91,29 +84,36 @@ class Friend(models.Model):
 class Datapoint(models.Model):
     owner       = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    datetime    = models.DateTimeField(_('Date Time'), auto_now_add=True)
+    datetime    = models.DateTimeField(_('Date Time'))
 
-    fbid_data   = models.TextField(_('FB ID Ranked Data'), validators=[int_list_validator])
+    # https://docs.djangoproject.com/en/2.1/ref/contrib/postgres/fields/
+    fbid_data   = ArrayField(models.IntegerField(),default=[])
 
     ownership_check = models.BooleanField(_('Ownership of Data confirmed by User'), default=False)
+
+    integrated  = models.BooleanField(_('Datapoint is integrated in Friends'), default=False)
 
     def __str__(self):
         return "%s: %s" % (self.owner.username, self.datetime)
 
+    def integrate_datapoint(self):
+        # Adds the datapoints to Friends or updates it if the timestamp present.
+        pass
+
     def save(self, *args, **kwargs):
         # Save this object and then creates or updates the Friend objects
         super(Datapoint, self).save(*args, **kwargs)
-        for rank, fbid in enumerate(self.fbid_data):
-            friend, created = Friend.objects.get_or_create(owner=self.owner,fbid=fbid)
-            if created:
-                friend.timestamps = str(self.datetime)
-                friend.ranks = int(rank)
-            else:
-                friend.timestamps += ', ' + str(self.datetime)
-                friend.ranks += ', ' + str(rank)
-            friend.last_rank = rank
-            # Save Friend Instance
-            friend.save()
+        #for rank, fbid in enumerate(self.fbid_data):
+        #    friend, created = Friend.objects.get_or_create(owner=self.owner,fbid=fbid)
+        #    if created:
+        #        friend.timestamps = str(self.datetime)
+        #        friend.ranks = int(rank)
+        #    else:
+        #        friend.timestamps += ', ' + str(self.datetime)
+        #        friend.ranks += ', ' + str(rank)
+        #    friend.last_rank = rank
+        #    # Save Friend Instance
+        #    friend.save()
 
     class Meta:
         verbose_name = _('Datapoint')
