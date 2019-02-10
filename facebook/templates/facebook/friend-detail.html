@@ -35,7 +35,11 @@
                 <div class="col-sm-12"><h1>{{ object.name|default_if_none:"--" }}</h1></div>
               </div>
               <div class="row">
-                <div class="col-sm-6">{% trans 'Profile Link' %}</div>
+                <div class="col-sm-6">
+                  <button type="button" class="btn btn-copy btn-light btn-block" data-clipboard-text="{{ friend.get_facebook_id_url }}">
+                    {% trans 'Copy Profile Link' %}
+                  </button>
+                </div>
                 <div class="col-sm-6">{{ friend.get_facebook_id_url }}</div>
               </div>
               <!--div class="row">
