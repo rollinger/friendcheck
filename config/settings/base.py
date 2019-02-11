@@ -43,6 +43,10 @@ DATABASES = {
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
+# Set the max upload size to 4 MB
+# Reason FB source can exceed 2.5MB default setting
+DATA_UPLOAD_MAX_MEMORY_SIZE = (1048576 * 4)
+
 # URLS
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
