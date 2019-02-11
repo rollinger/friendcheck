@@ -72,6 +72,7 @@ THIRD_PARTY_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'rest_framework',
+    'paypal.standard.ipn',
 ]
 LOCAL_APPS = [
     'friendcheck.users.apps.UsersAppConfig',

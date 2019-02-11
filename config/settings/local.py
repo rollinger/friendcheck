@@ -62,3 +62,5 @@ INSTALLED_APPS += ['django_extensions']  # noqa F405
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+# Set Paypal to Sandbox mode
+PAYPAL_TEST = True
