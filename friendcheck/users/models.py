@@ -1,10 +1,12 @@
 from django.contrib.auth.models import AbstractUser
-from django.db.models import CharField, DateTimeField
+from django.db.models import Model, CharField, DateTimeField, BooleanField
+from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.utils import timezone
+import datetime
 
 FREE_DATAPOINTS = 3
 
@@ -14,7 +16,17 @@ SUBSCRIPTION_TYPES = (
     ('2', 'VIP'),   # no costs; add datapoints unlimited
 )
 
-SUBSCRIPTION_PLANS = ()
+SUBSCRIPTION_PLANS = (
+    ('0', 'MONTHLY'),           # USD 5.99;
+    ('1', 'MONTHLY DISCOUNT'),  # USD 3.99;
+    ('2', 'YEARLY'),            # USD 45.0;
+)
+
+SUBSCRIPTION_PLANS_DETAILS = {
+    'MONTHLY': {'price_usd':5.99, 'subscription_extention_days': 30},
+    'MONTHLY DISCOUNT': {'price_usd':3.99, 'subscription_extention_days': 30},
+    'YEARLY': {'price_usd':45.0, 'subscription_extention_days': 365},
+}
 
 class User(AbstractUser):
 
@@ -24,6 +36,22 @@ class User(AbstractUser):
 
     subscription_type = CharField(_('Type of Subscription'), max_length=255,choices=SUBSCRIPTION_TYPES, default='0')
     subscription_valid_until = DateTimeField(_("Subscription valid until"), blank=True, null=True )
+
+    def extend_subscription(subscription_plan):
+        # Days to be extended
+        days_increment = SUBSCRIPTION_PLANS_DETAILS[subscription_plan]['subscription_extention_days']
+        if self.subscription_valid_until == None:
+            # Create Subscription (no subscription before)
+            self.subscription_valid_until = timezone.now() + datetime.timedelta(days=days_increment)
+        elif timezone.now() > self.subscription_valid_until:
+            # Renew Subscription (subscription in the past)
+            self.subscription_valid_until = timezone.now() + datetime.timedelta(days=days_increment)
+        elif timezone.now() < self.subscription_valid_until:
+            # Extend Subscription (Current Subscription still valid)
+            self.subscription_valid_until += datetime.timedelta(days=days_increment)
+        # Save User Object
+        self.save()
+
 
     def perm_add_datapoint(self):
         # Checks if the User:
@@ -73,7 +101,7 @@ def can_add_datapoint_permission(function):
         # Permission Test: Can add a datapoint
         if request.user.perm_add_datapoint():# and request.user.is_active:
                return function(obj, request, *args, **kw)
-        return HttpResponseRedirect("/subscribe/")
+        return HttpResponseRedirect(request.user.get_absolute_url())
     return wrapper
 
 def can_update_friend_permission(function):
@@ -85,11 +113,24 @@ def can_update_friend_permission(function):
         # Permission Test: Can add a datapoint
         if request.user.perm_update_friend():# and request.user.is_active:
                return function(obj, request, *args, **kw)
-        return HttpResponseRedirect("/subscribe/")
+        return HttpResponseRedirect(request.user.get_absolute_url())
     return wrapper
 
 
-#class Booking(models.Model):
-#    owner       = models.ForeignKey(User, on_delete=models.CASCADE)
-#    created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
-#    updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
+class Booking(Model):
+    owner       = models.ForeignKey(User, related_name="bookings", on_delete=models.CASCADE)
+
+    subscription_plan = CharField(_('Subscription Deal'), max_length=255, choices=SUBSCRIPTION_PLANS, default='0')
+    payment_complete  = BooleanField(_('Payment Completed'), default=False)
+    payment_completion_date  = DateTimeField(_('Payment Completion Date'), blank=True, null=True)
+
+    created_at  = DateTimeField(_('Created at'), auto_now_add=True)
+    updated_at  = DateTimeField(_('Updated at'), auto_now=True)
+
+    def complete_subscription(self):
+        if not self.payment_complete:
+            self.payment_complete = True
+            self.payment_completion_date = timezone.now()
+            self.save()
+            # Extend subscription on the User Object
+            self.owner.extend_subscription(self.subscription_plan)
