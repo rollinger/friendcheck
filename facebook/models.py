@@ -114,7 +114,10 @@ class Datapoint(models.Model):
     datetime    = models.DateTimeField(_('Date Time'))
 
     fbid_data   = models.TextField(_('FB ID List'), null=True, blank=True,
-                help_text=_('Expects comma-seperated list of facebook ids'))
+                help_text=_('String of comma-separated list of facebook ids: ["123","456",...]'))
+
+    source_code = models.TextField(_('FB Page Source Code'), null=True, blank=True,
+                help_text=_('Source Code of the main facebook page'))
 
     ownership_check = models.BooleanField(_('Ownership of Data confirmed by User'), default=False)
 
@@ -144,7 +147,11 @@ class Datapoint(models.Model):
     def save(self, *args, **kwargs):
         super(Datapoint, self).save(*args, **kwargs)
         # call integrate_datapoint (LATER: Asnc, delayed execution)
-        if not self.integrated:
+        # Requirements for Integration:
+        #   - fbid_data != Empty or None
+        #   - Ownership check == True
+        #   - Integrated == False (becomes True after integration)
+        if self.fbid_data and self.ownership_check == True and self.integrated == False:
             self.integrate_datapoint()
             self.integrated=True
             super(Datapoint, self).save(*args, **kwargs)

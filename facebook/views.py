@@ -1,3 +1,6 @@
+import re
+from django.utils import timezone
+
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -31,26 +34,40 @@ facebook_overview_view = FBOverviewView.as_view()
 class CreateFBDatapointView(LoginRequiredMixin, FormView):
     template_name = 'facebook/add_datapoint.html'
     form_class = FacebookDatapointForm
-    #fields = ["name"]
 
     def get_success_url(self):
         return reverse("facebook:overview")
 
-    def create_datapoint(self, fbid_data):
-        # Creates a Datapoint Object for that User
-        datapoint = Datapoint(
-            owner = self.request.user,
-            fbid_data = fbid_data,
-            ownership_check = True
-        )
-        datapoint.save()
-
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
-        fbid_data = form.extract_fbid_data()
-        if fbid_data:
-            self.create_datapoint(fbid_data)
+        fbid_data = self.extract_fbid_data(form.cleaned_data['facebook_source_code'])
+        # Create Datapoint
+        datapoint = Datapoint(
+            owner = self.request.user,
+            fbid_data = fbid_data,
+            datetime = timezone.now(),
+            source_code = form.cleaned_data['facebook_source_code'],
+            ownership_check = form.cleaned_data['ownership_check']
+        )
+        datapoint.save()
         return super().form_valid(form)
+
+    def extract_fbid_data(self, source_code):
+        # Returns the list of facebook ids as a json list (python string)
+
+        # Get the relevant data stream between the start and end marker
+        data_stream = ""
+        start_marker = r"InitialChatFriendsList(.+?)list:"
+        end_marker = r",shortProfiles"
+        compiled_regex = start_marker + '(.+?)' + end_marker
+        try:
+            data_stream = re.search(compiled_regex, source_code).group(2)
+        except AttributeError:
+            # data stream not found in the original facebook_source_code
+            # TODO: apply your error handling
+            data_stream = ''
+        # Returns the json list
+        return data_stream
 
 facebook_add_datapoint_view = CreateFBDatapointView.as_view()

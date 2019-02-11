@@ -16,7 +16,9 @@ admin.site.register(Friend, FriendAdmin)
 
 
 class DatapointAdmin(admin.ModelAdmin):
-    list_display = ["owner", "datetime", 'integrated']#
+    list_display = ["owner", "datetime", 'ownership_check', 'integrated']
+    list_display_links = ['datetime']
     #readonly_fields = ["integrated",]
+    list_filter = ['owner',]
 
 admin.site.register(Datapoint, DatapointAdmin)
