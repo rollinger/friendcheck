@@ -109,7 +109,7 @@ class Friend(models.Model):
 
 
 class Datapoint(models.Model):
-    owner       = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner       = models.ForeignKey(User, related_name="datapoints", on_delete=models.CASCADE)
 
     datetime    = models.DateTimeField(_('Date Time'))
 

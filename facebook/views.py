@@ -11,6 +11,8 @@ from django.views.generic.edit import FormView
 from facebook.forms import FacebookDatapointForm, FriendUpdateForm
 from facebook.models import Datapoint, Friend
 
+from friendcheck.users.models import can_add_datapoint_permission, can_update_friend_permission
+
 # Displays the data about one friend
 class FriendDetailView(LoginRequiredMixin, UpdateView):
     model = Friend
@@ -31,9 +33,13 @@ class FBOverviewView(LoginRequiredMixin, ListView):
 facebook_overview_view = FBOverviewView.as_view()
 
 # Create FB Datapoint
-class CreateFBDatapointView(LoginRequiredMixin, FormView):
+class CreateFBDatapointView(FormView):
     template_name = 'facebook/add_datapoint.html'
     form_class = FacebookDatapointForm
+
+    @can_add_datapoint_permission
+    def dispatch(self, *args, **kwargs):
+         return super(CreateFBDatapointView, self).dispatch(*args, **kwargs)
 
     def get_success_url(self):
         return reverse("facebook:overview")
