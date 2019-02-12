@@ -26,7 +26,12 @@ urlpatterns = [
         include("friendcheck.users.urls", namespace="users"),
     ),
     path("accounts/", include("allauth.urls")),
+
     # Your stuff: custom urls includes go here
+
+    #path(r'^paypal/', include('paypal.standard.ipn.urls')),
+    path('paypal/', include('paypal.standard.ipn.urls')),
+
 ] + static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
 )

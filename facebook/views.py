@@ -21,6 +21,8 @@ class FriendDetailView(LoginRequiredMixin, UpdateView):
 
 facebook_friend_view = FriendDetailView.as_view()
 
+
+
 # Overview View
 class FBOverviewView(LoginRequiredMixin, ListView):
     template_name = 'facebook/start.html'
@@ -31,6 +33,8 @@ class FBOverviewView(LoginRequiredMixin, ListView):
         return object_list
 
 facebook_overview_view = FBOverviewView.as_view()
+
+
 
 # Create FB Datapoint
 class CreateFBDatapointView(FormView):

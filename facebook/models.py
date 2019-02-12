@@ -77,7 +77,8 @@ class Friend(models.Model):
 
     def volatility(self):
         volatility = 0
-        for a, b in pairwise(self.ranks):
+        ranks=self.ranks#[-2:]
+        for a, b in pairwise(ranks):
             volatility += (a-b)
         return volatility
 

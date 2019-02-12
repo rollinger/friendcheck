@@ -45,9 +45,8 @@
       <table class="table table-striped" data-toggle="table" data-search="true">
         <thead>
           <tr>
-            <th scope="col" data-sortable="true">{% trans 'Current Rank' %}</th>
-            <th scope="col" data-sortable="true">{% trans 'Total Movement' %}</th>
-            <th scope="col" data-sortable="true">{% trans 'Absolute Movement' %}</th>
+            <th scope="col" data-sortable="true">{% trans 'Rank' %}</th>
+            <th scope="col" data-sortable="true">{% trans 'Rank Movement' %}</th>
             <th scope="col">{% trans 'Name' %}</th>
             <th scope="col">{% trans 'Picture' %}</th>
             <th scope="col">{% trans 'Profile Link' %}</th>
@@ -59,7 +58,6 @@
             <tr>
               <td scope="row">{{ friend.last_rank|default_if_none:"--" }}</td>
               <td>{{ friend.volatility|default_if_none:"--" }}</td>
-              <td>{{ friend.absolute_volatility|default_if_none:"--" }}</td>
               <td>{{ friend.name|default_if_none:"--" }}</td>
               <td>
                 {% if friend.avatar %}

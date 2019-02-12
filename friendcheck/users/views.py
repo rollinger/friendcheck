@@ -1,7 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
-from django.views.generic import DetailView, ListView, RedirectView, UpdateView
+from paypal.standard.forms import PayPalPaymentsForm
+from django.views.generic import DetailView, ListView, RedirectView, UpdateView, TemplateView
+from django.contrib import messages
+from django.utils.translation import ugettext_lazy as _
 
 User = get_user_model()
 
@@ -11,7 +14,6 @@ class UserDetailView(LoginRequiredMixin, DetailView):
     model = User
     slug_field = "username"
     slug_url_kwarg = "username"
-
 
 user_detail_view = UserDetailView.as_view()
 
@@ -50,3 +52,42 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 
 
 user_redirect_view = UserRedirectView.as_view()
+
+
+class UserSubscriptionView(LoginRequiredMixin, TemplateView):
+    #https://django-paypal.readthedocs.io/en/stable/standard/ipn.html
+    template_name = "users/user_subscription.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserSubscriptionView, self).get_context_data(**kwargs)
+
+        paypal_dict_30_days = {
+            "business": "philipp.rollinger@gmail.com",
+            "amount": "5.99",
+            "item_name": "Friendcheck MONTHLY Plan",
+            "invoice": "unique-invoice-id",
+            "notify_url": self.request.build_absolute_uri(reverse('paypal-ipn')),
+            "return": self.request.build_absolute_uri(reverse('users:subscription-success')),
+            "cancel_return": self.request.build_absolute_uri(reverse('users:subscription-canceled')),
+            "custom": "monthly_plan",  # Custom command to correlate to some function later (optional)
+        }
+        context['paypal30daysform'] = PayPalPaymentsForm(initial=paypal_dict_30_days)
+        #context['paypal365daysform'] = PayPalPaymentsForm(initial=paypal_dict_365_days)
+
+        # Process messages if the view is called by cancel return or success-return
+        if self.request.path == reverse('users:subscription-canceled'):
+            messages.add_message(self.request, messages.ERROR,
+                _('Your Subscription was canceled!'), fail_silently=True)
+        elif self.request.path == reverse('users:subscription-success'):
+            messages.add_message(self.request, messages.SUCCESS,
+                _('Your Subscription was successfully added!'), fail_silently=True)
+        # Return the Context
+        return context
+    #model = User
+    #slug_field = "username"
+    #slug_url_kwarg = "username"
+    #UserPassesTestMixin,
+    #def test_func(self):
+    #    return self.request.user.username == self.username
+
+user_subscription_view = UserSubscriptionView.as_view()

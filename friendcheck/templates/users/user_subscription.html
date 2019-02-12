@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}Subscription: {{ request.user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>{% trans "Your Subscription" %}:</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+
+      <p>{% trans "Your Subscription is valid until " %}
+        {{request.user.subscription_valid_until}}</p>
+    </div>
+    <div class="col-sm-3">
+      {% trans "Extend 30 days" %}
+      {{ paypal30daysform.render }}
+    </div>
+    <div class="col-sm-3">
+      {% trans "Extend 365 days" %}
+    </div>
+  </div>
+
+</div>
+
+
+
+{% endblock content %}
