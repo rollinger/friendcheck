@@ -34,7 +34,7 @@ class DatapointAdmin(admin.ModelAdmin):
     list_display = ["owner", "datetime", 'ownership_check', 'integrated']
     list_display_links = ['datetime']
     #readonly_fields = ["integrated",]
-    list_filter = ['owner',]
+    list_filter = ['ownership_check', 'integrated', 'owner',]
 
     actions = ['reintegrate_datapoints']
 
