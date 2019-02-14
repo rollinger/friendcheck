@@ -62,7 +62,7 @@ class UserSubscriptionView(LoginRequiredMixin, TemplateView):
         context = super(UserSubscriptionView, self).get_context_data(**kwargs)
 
         paypal_dict_30_days = {
-            "business": "philipp.rollinger@gmail.com",
+            "business": "receiver_test_email@example.com",
             "amount": "5.99",
             "item_name": "Friendcheck MONTHLY Plan",
             "invoice": "unique-invoice-id",
@@ -77,10 +77,10 @@ class UserSubscriptionView(LoginRequiredMixin, TemplateView):
         # Process messages if the view is called by cancel return or success-return
         if self.request.path == reverse('users:subscription-canceled'):
             messages.add_message(self.request, messages.ERROR,
-                _('Your Subscription was canceled!'), fail_silently=True)
+                _('Your payment attempt for your subscription was canceled!'), fail_silently=True)
         elif self.request.path == reverse('users:subscription-success'):
             messages.add_message(self.request, messages.SUCCESS,
-                _('Your Subscription was successfully added!'), fail_silently=True)
+                _('Your payment for your subscription was successfully completed!'), fail_silently=True)
         # Return the Context
         return context
     #model = User

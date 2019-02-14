@@ -46,7 +46,8 @@
         <thead>
           <tr>
             <th scope="col" data-sortable="true">{% trans 'Rank' %}</th>
-            <th scope="col" data-sortable="true">{% trans 'Rank Movement' %}</th>
+            <th scope="col" data-sortable="true">{% trans 'Total Movement' %}</th>
+            <th scope="col" data-sortable="true">{% trans 'Total Social Signals' %}</th>
             <th scope="col">{% trans 'Name' %}</th>
             <th scope="col">{% trans 'Picture' %}</th>
             <th scope="col">{% trans 'Profile Link' %}</th>
@@ -57,7 +58,8 @@
           {% for friend in friend_list %}
             <tr>
               <td scope="row">{{ friend.last_rank|default_if_none:"--" }}</td>
-              <td>{{ friend.volatility|default_if_none:"--" }}</td>
+              <td>{{ friend.total_movement|default_if_none:"--" }}</td>
+              <td>{{ friend.total_social_signals|default_if_none:"--" }}</td>
               <td>{{ friend.name|default_if_none:"--" }}</td>
               <td>
                 {% if friend.avatar %}

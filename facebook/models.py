@@ -10,6 +10,9 @@ from django.core.validators import int_list_validator
 
 from friendcheck.users.models import User
 
+# Facebook stores 400 fbid, after removing for duplicates
+MAXRANK = 400
+
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = tee(iterable)
@@ -37,9 +40,13 @@ class Friend(models.Model):
 
     last_rank   = models.IntegerField(_('Current Rank'),null=True, blank=True)
 
-    volatility  = ArrayField(models.IntegerField(),null=True, blank=True)
+    movement  = ArrayField(models.IntegerField(),null=True, blank=True)
+
+    total_movement   = models.IntegerField(_('Total Rank Movement'),null=True, blank=True)
 
     social_signals = ArrayField(models.IntegerField(),null=True, blank=True)
+
+    total_social_signals   = models.IntegerField(_('Total Social Signals'),null=True, blank=True)
 
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
@@ -65,22 +72,60 @@ class Friend(models.Model):
             # Modify Rank at found index
             self.ranks[idx] = rank
         # calculate volatility and social_signals
-        # Save the object
+        self.calculate_movement()
+        self.calculate_social_signal()
+        # Set the last_rank and totals for volatility and social_signals
         self.last_rank = self.ranks[-1]
+        # Save the object
         self.save()
 
-    def absolute_volatility(self):
-        volatility = 0
-        for a, b in pairwise(self.ranks):
-            volatility += abs(a-b)
-        return volatility
+    def calculate_movement(self):
+        if self.ranks and len(self.ranks) >= 2:
+            # Volatility from the last two rank elements
+            volatility = (self.ranks[-2]-self.ranks[-1])
+            # Create or append to ArrayField
+            if self.movement == None:
+                self.movement = [volatility]
+            else:
+                self.movement.append(volatility)
+            # Calculate Total Movement
+            self.total_movement = 0
+            for m in self.movement:
+                self.total_movement += m
 
-    def volatility(self):
-        volatility = 0
-        ranks=self.ranks#[-2:]
-        for a, b in pairwise(ranks):
-            volatility += (a-b)
-        return volatility
+    def calculate_social_signal(self):
+        if self.ranks: #and len(self.ranks) >= 2:
+            if len(self.ranks) == 1:
+                # Volatility from MAXRANK to the current rank
+                a = MAXRANK
+                b = self.ranks[-1]
+            elif len(self.ranks) >= 2:
+                # Social Signals from the last two rank elements
+                a = self.ranks[-2]
+                b = self.ranks[-1]
+            # calculate the estimated delta of social signals based on rank
+            if a == b: # maintain rank
+                social_signal = (MAXRANK-a)
+            elif a < b: # ascending (descending in ranks)
+                d = 0
+                for r1, r2 in pairwise(range(a,b+1)):
+                    d += (MAXRANK-r2)*-1
+                social_signal = d
+            elif a > b: # descending (ascending in ranks)
+                d = 0
+                for r1, r2 in pairwise(range(a,b-1,-1)):
+                    d += (MAXRANK-r2)
+                social_signal = d
+
+            # Create or append to ArrayField
+            if self.social_signals == None:
+                self.social_signals = [social_signal]
+            else:
+                self.social_signals.append(social_signal)
+
+            self.total_social_signals = 0
+            for ss in self.social_signals:
+                self.total_social_signals += ss
 
     def get_rank_timeseries(self):
         # Returns the timeseries of rank data for the friend
@@ -134,11 +179,13 @@ class Datapoint(models.Model):
         # Extract fbid's from text field
         data = re.findall('\"(\d*)-\d\"', self.fbid_data )
         data = [int( d ) for d in data]
+
         # Remove duplicates while maintain order
         fbid_list = []
         seen = set()
         seen_add = seen.add
         fbid_list = [x for x in data if not (x in seen or seen_add(x))]
+
         # Adds each datapoints to Friends or updates it if the timestamp present.
         for rank, fbid in enumerate(fbid_list):
             #print('%s:%d' % (fbid,rank+1) )
