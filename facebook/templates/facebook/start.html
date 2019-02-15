@@ -45,9 +45,21 @@
       <table class="table table-striped" data-toggle="table" data-search="true">
         <thead>
           <tr>
+            <th></th>
+            <th colspan="2">{% trans 'Movement' %}</th>
+            <th colspan="2">{% trans 'Social Signals' %}</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+
+          <tr>
             <th scope="col" data-sortable="true">{% trans 'Rank' %}</th>
-            <th scope="col" data-sortable="true">{% trans 'Total Movement' %}</th>
-            <th scope="col" data-sortable="true">{% trans 'Total Social Signals' %}</th>
+            <th scope="col" data-sortable="true">{% trans 'Total' %}</th>
+            <th scope="col" data-sortable="true">{% trans 'Current' %}</th>
+            <th scope="col" data-sortable="true">{% trans 'Total' %}</th>
+            <th scope="col" data-sortable="true">{% trans 'Current' %}</th>
             <th scope="col">{% trans 'Name' %}</th>
             <th scope="col">{% trans 'Picture' %}</th>
             <th scope="col">{% trans 'Profile Link' %}</th>
@@ -59,7 +71,9 @@
             <tr>
               <td scope="row">{{ friend.last_rank|default_if_none:"--" }}</td>
               <td>{{ friend.total_movement|default_if_none:"--" }}</td>
+              <td>{{ friend.get_current_movement|default_if_none:"--" }}</td>
               <td>{{ friend.total_social_signals|default_if_none:"--" }}</td>
+              <td>{{ friend.get_current_social_signals|default_if_none:"--" }}</td>
               <td>{{ friend.name|default_if_none:"--" }}</td>
               <td>
                 {% if friend.avatar %}

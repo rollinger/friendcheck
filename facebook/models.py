@@ -127,6 +127,14 @@ class Friend(models.Model):
             for ss in self.social_signals:
                 self.total_social_signals += ss
 
+    def get_current_movement(self,dp=2):
+        if self.movement and len(self.movement) >= dp:
+            return sum(self.movement[-dp:])
+
+    def get_current_social_signals(self,dp=2):
+        if self.social_signals and len(self.social_signals) >= dp:
+            return sum(self.social_signals[-dp:])
+
     def get_rank_timeseries(self):
         # Returns the timeseries of rank data for the friend
         #timestamps = [re.sub(r'\..*', '', d) for d in self.timestamps.split(', ')]
