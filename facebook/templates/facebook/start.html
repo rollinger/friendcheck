@@ -22,7 +22,12 @@
   <ul class="nav nav-tabs" id="facebookTab" role="tablist">
     <li class="nav-item">
       <a class="nav-link active" id="friends-tab" data-toggle="tab" href="#friends" role="tab" aria-controls="home" aria-selected="true">
-        {% trans 'Friends' %}
+        <h6>{% trans 'Friends' %}</h6>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="howto-tab" data-toggle="tab" href="#howto" role="tab" aria-controls="home" aria-selected="false">
+        <h6>{% trans 'HowTo' %}</h6>
       </a>
     </li>
     <!--li class="nav-item">
@@ -41,17 +46,17 @@
   <div class="tab-content" id="myTabContent">
 
     <div class="tab-pane fade show active" id="friends" role="tabpanel" aria-labelledby="friends-tab">
-      <h3>{% trans 'Friends' %}</h3>
+      <!--h3>{% trans 'Friends' %}</h3-->
       <table class="table table-striped" data-toggle="table" data-search="true">
         <thead>
           <tr>
             <th></th>
             <th colspan="2"><center>{% trans 'Movement' %}</center></th>
             <th colspan="2"><center>{% trans 'Social Signals' %}</center></th>
+            <th colspan="3"></th>
+            <!--th></th>
             <th></th>
-            <th></th>
-            <!--th></th-->
-            <th></th>
+            <th></th-->
           </tr>
 
           <tr>
@@ -93,6 +98,44 @@
           {% endfor %}
         </tbody>
       </table>
+    </div>
+
+    <div class="tab-pane fade" id="howto" role="tabpanel" aria-labelledby="howto-tab">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12">
+            {% blocktrans %}
+              <h5>How to interpret the Data:</h5>
+              <p>After you uploaded a datapoint containing your logged in facebook page,
+              the deep statistical analysis of your page begins. The way facebook
+              generates your site we can make inferences on how facebook sees your relationships
+              with some of your friends.</p>
+              <p>When the deep analysis is complete you have a list with your facebook friends that, according
+              to facebook, showed interest in your profile, posts, pictures and emitted other social signals.
+              The result includes your signals and those of your friends.</p>
+              <p>Three key numbers are important for you to get to know your friends better:
+              Rank, Movement and Social Signals - all are sortable in the table.</p>
+              <p>The highest rank (that is #1) indicates that you and that friend have a strong relation currently.
+              A friend ranging at the lower end of the hierarchy indicates a somewhat lower interest.</p>
+              <p>The movement number indicates how much your friend moved up or down the rank latter
+              over the timeperiod you have added datapoints. It is positive in an net upward
+              movement and negative when your friend is dropping out of your 'inner circle'.</p>
+              <p>The social signals number indicates the amount and importance of social signals that
+              happened between you and your friends. Different social signal are weighted more
+              than others. The higher the value, the stronger the social impact or your social relation
+              with that friend. If it is negative, it might also mean, that your friend is just more
+              interested in someone else right now.</p>
+              <p>Always make sure to check the friends detail page, where you see the timeline chart of rank
+              movement of your friends.</p>
+              <p>If you find a friend jumping from Rank 200 to Rank 10 in one day, you know something
+              is going on. What is going on, only you can know.</p>
+              <p>Over time, if you add more datapoints, you can see how the friendship develops, your
+              friends moving around the chart, and our predictions gets ever more accurate.</p>
+              <p>Have fun playing around and see for yourself if facebook knows your friends as good as you do.</p>
+            {% endblocktrans %}
+          </div>
+        </div>
+      </div>
     </div>
 
     <!--div class="tab-pane fade" id="chart-rank-50" role="tabpanel" aria-labelledby="chart-tab">
