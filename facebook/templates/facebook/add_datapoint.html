@@ -4,14 +4,74 @@
 {% block title %}{% trans 'Add New Datapoint' %}{% endblock %}
 
 {% block content %}
-  <h1>{% trans 'Add New Datapoint:' %}</h1>
-  <form class="form-horizontal" method="post" action="{% url 'facebook:add_datapoint' %}">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <div class="control-group">
-      <div class="controls">
-        <button type="submit" class="btn">{% trans 'Add New Datapoint' %}</button>
-      </div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>{% trans 'Add New Datapoint:' %}</h1>
     </div>
-  </form>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <form class="form-horizontal" method="post" action="{% url 'facebook:add_datapoint' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="control-group">
+          <div class="controls">
+            <button type="submit" class="btn">{% trans 'Add New Datapoint' %}</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-sm-6">
+      <ul class="nav nav-tabs" id="addDatapointTab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="addhelp-tab" data-toggle="tab" href="#addhelp" role="tab" aria-controls="home" aria-selected="true">
+            {% trans 'How to add the a datapoint' %}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="disclaimer-tab" data-toggle="tab" href="#disclaimer" role="tab" aria-controls="home" aria-selected="false">
+            {% trans 'Security & Disclaimer' %}
+          </a>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="addDatapointTabContent">
+        <div class="tab-pane fade show active" id="addhelp" role="tabpanel" aria-labelledby="addhelp-tab">
+          {% blocktrans %}
+            <h5></h5>
+
+            <ol>
+              <li>Open your facebook page in another tab and log into your account.</li>
+              <li>Right click on the main page and select "View Page Source"</li>
+              <li>In the new tab you see the HTML code where the information to your social network is hidden.</li>
+              <li>Click "Select All" and copy the entire HTML code into the form.</li>
+              <li>Make sure to confirm that the HTML code is that of your facebook page and that you agree to our terms and conditions.</li>
+              <li>Press "Add New Datapoint"</li>
+            </ol>
+
+            <p>The analysis of your page starts and when ready you will see new data integrated in the
+            overview page. You will be redirected there.</p>
+
+            <p>Since the relevant information are only updated every 24 hours the form can only
+            be used once a day.</p>
+          {% endblocktrans %}
+        </div>
+
+        <div class="tab-pane fade show active" id="disclaimer" role="tabpanel" aria-labelledby="disclaimer-tab">
+          {% blocktrans %}
+            <p>We value your privacy. We earn money with your subscription. Thank you very much!</p>
+            <p>That means, that your data is yours all the time. We don't sell it, we don't take
+              any information that might compromise your facebook account, we dont use the data
+              for any other purpose, other than inform and help you to make sense out of your friends.</p>
+            <p>If you decide to delete your data, you can do that anytime and all your data will be
+              deleted, no recovery or external backups.</p>
+            <p>Thank you for your Trust!</p>
+          {% endblocktrans %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 {% endblock %}
