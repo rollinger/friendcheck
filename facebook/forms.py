@@ -12,9 +12,9 @@ class FriendUpdateForm(forms.ModelForm):
         # TODO: Add notes &  add_to_watchlist
 
 class FacebookDatapointForm(forms.Form):
+    facebook_source_code = forms.CharField(
+        label=_('Paste here the whole source code of your logged in facebook main page.'),
+        widget=forms.Textarea)
     ownership_check = forms.BooleanField(
         label=_('I confirm that the data is mine and I agree to the Terms and Conditions of this Website.'),
         required=True)
-    facebook_source_code = forms.CharField(
-        label=_('Paste here the source code of your facebook main page.'),
-        widget=forms.Textarea)

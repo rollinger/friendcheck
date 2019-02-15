@@ -127,11 +127,13 @@ class Friend(models.Model):
             for ss in self.social_signals:
                 self.total_social_signals += ss
 
-    def get_current_movement(self,dp=2):
+    def get_current_movement(self,dp=1):
+        # Returns the movement betwen the last dp+1 ranks
         if self.movement and len(self.movement) >= dp:
             return sum(self.movement[-dp:])
 
-    def get_current_social_signals(self,dp=2):
+    def get_current_social_signals(self,dp=1):
+        # Returns the social signals betwen the last dp+1 ranks
         if self.social_signals and len(self.social_signals) >= dp:
             return sum(self.social_signals[-dp:])
 
