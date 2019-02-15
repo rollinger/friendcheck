@@ -46,11 +46,11 @@
         <thead>
           <tr>
             <th></th>
-            <th colspan="2">{% trans 'Movement' %}</th>
-            <th colspan="2">{% trans 'Social Signals' %}</th>
+            <th colspan="2"><center>{% trans 'Movement' %}</center></th>
+            <th colspan="2"><center>{% trans 'Social Signals' %}</center></th>
             <th></th>
             <th></th>
-            <th></th>
+            <!--th></th-->
             <th></th>
           </tr>
 
@@ -60,27 +60,27 @@
             <th scope="col" data-sortable="true">{% trans 'Current' %}</th>
             <th scope="col" data-sortable="true">{% trans 'Total' %}</th>
             <th scope="col" data-sortable="true">{% trans 'Current' %}</th>
-            <th scope="col">{% trans 'Name' %}</th>
             <th scope="col">{% trans 'Picture' %}</th>
-            <th scope="col">{% trans 'Profile Link' %}</th>
+            <th scope="col">{% trans 'Name' %}</th>
+            <!--th scope="col">{% trans 'Profile Link' %}</th-->
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
           {% for friend in friend_list %}
             <tr>
-              <td scope="row">{{ friend.last_rank|default_if_none:"--" }}</td>
+              <td scope="row"><b>{{ friend.last_rank|default_if_none:"--" }}</b></td>
               <td>{{ friend.total_movement|default_if_none:"--" }}</td>
               <td>{{ friend.get_current_movement|default_if_none:"--" }}</td>
               <td>{{ friend.total_social_signals|default_if_none:"--" }}</td>
               <td>{{ friend.get_current_social_signals|default_if_none:"--" }}</td>
-              <td>{{ friend.name|default_if_none:"--" }}</td>
               <td>
                 {% if friend.avatar %}
                     <img src="{{ MEDIA_URL }}{{ friend.avatar }}" alt="{{ friend.name }}" class="img-rounded img-responsive center-block" style="max-width:120px;">
                 {% endif %}
               </td>
-              <td>{{ friend.get_facebook_id_url }}</td>
+              <td>{{ friend|default_if_none:"--" }}</td>
+              <!--td>{{ friend.get_facebook_id_url }}</td-->
               <td>
                 <button type="button" class="btn btn-copy btn-light btn-block" data-clipboard-text="{{ friend.get_facebook_id_url }}">
                   {% trans 'Copy Profile Link' %}

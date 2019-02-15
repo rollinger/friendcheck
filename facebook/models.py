@@ -144,7 +144,8 @@ class Friend(models.Model):
 
     def __str__(self):
         if self.name:
-            return "%s (%s)" % (self.name, self.fbid)
+            #return "%s (%s)" % (self.name, self.fbid)
+            return "%s" % self.name
         else:
             return "%s" % self.fbid
 
