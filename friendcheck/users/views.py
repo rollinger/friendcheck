@@ -5,8 +5,19 @@ from paypal.standard.forms import PayPalPaymentsForm
 from django.views.generic import DetailView, ListView, RedirectView, UpdateView, TemplateView
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
+
+from . models import PAYPAL_RECEIVER_EMAIL, SUBSCRIPTION_PLANS_DETAILS
 
 User = get_user_model()
+
+def generate_unique_invoice_id(user_object):
+    # Generates a unique invoice id in the format
+    # FC-<user-pk>-<current_date>-<user-username>
+    unique_user_id = "FC-{}-{}-{}".format( str(user_object.pk), \
+        str(timezone.now().strftime("%Y%m%d%H%M%S")), \
+        str(user_object.username))
+    return unique_user_id
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
@@ -62,10 +73,10 @@ class UserSubscriptionView(LoginRequiredMixin, TemplateView):
         context = super(UserSubscriptionView, self).get_context_data(**kwargs)
 
         paypal_dict_30_days = {
-            "business": "receiver_test_email@example.com",
-            "amount": "5.99",
-            "item_name": "Friendcheck MONTHLY Plan",
-            "invoice": "unique-invoice-id",
+            "business": PAYPAL_RECEIVER_EMAIL,
+            "amount": SUBSCRIPTION_PLANS_DETAILS['MONTHLY']['price_usd'],
+            "item_name": SUBSCRIPTION_PLANS_DETAILS['MONTHLY']['item_name'],
+            "invoice": generate_unique_invoice_id(self.request.user),
             "notify_url": self.request.build_absolute_uri(reverse('paypal-ipn')),
             "return": self.request.build_absolute_uri(reverse('users:subscription-success')),
             "cancel_return": self.request.build_absolute_uri(reverse('users:subscription-canceled')),
@@ -83,11 +94,5 @@ class UserSubscriptionView(LoginRequiredMixin, TemplateView):
                 _('Your payment for your subscription was successfully completed!'), fail_silently=True)
         # Return the Context
         return context
-    #model = User
-    #slug_field = "username"
-    #slug_url_kwarg = "username"
-    #UserPassesTestMixin,
-    #def test_func(self):
-    #    return self.request.user.username == self.username
 
 user_subscription_view = UserSubscriptionView.as_view()

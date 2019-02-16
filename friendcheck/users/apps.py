@@ -11,3 +11,5 @@ class UsersAppConfig(AppConfig):
             import users.signals  # noqa F401
         except ImportError:
             pass
+        # import the valid_ipn_received hook
+        import users.paypal_signals

@@ -8,6 +8,8 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 import datetime
 
+from . paypal_conf import PAYPAL_RECEIVER_EMAIL, SUBSCRIPTION_PLANS_DETAILS
+
 FREE_DATAPOINTS = 3
 
 SUBSCRIPTION_TYPES = (
@@ -22,24 +24,21 @@ SUBSCRIPTION_PLANS = (
     ('2', 'YEARLY'),            # USD 45.0;
 )
 
-SUBSCRIPTION_PLANS_DETAILS = {
-    'MONTHLY': {'price_usd':5.99, 'subscription_extention_days': 30},
-    'MONTHLY DISCOUNT': {'price_usd':3.99, 'subscription_extention_days': 30},
-    'YEARLY': {'price_usd':45.0, 'subscription_extention_days': 365},
-}
+
 
 class User(AbstractUser):
 
-    # First Name and Last Name do not cover name patterns
-    # around the globe.
+    # First Name and Last Name do not cover name patterns around the globe.
     name = CharField(_("Name of User"), blank=True, max_length=255)
 
     subscription_type = CharField(_('Type of Subscription'), max_length=255,choices=SUBSCRIPTION_TYPES, default='0')
     subscription_valid_until = DateTimeField(_("Subscription valid until"), blank=True, null=True )
 
-    def extend_subscription(subscription_plan):
+    def extend_subscription(self, days_increment):
         # Days to be extended
-        days_increment = SUBSCRIPTION_PLANS_DETAILS[subscription_plan]['subscription_extention_days']
+        print('EXTEND SUBSCRIPTION')
+        print(days_increment)
+        #days_increment = SUBSCRIPTION_PLANS_DETAILS[subscription_plan]['subscription_extention_days']
         if self.subscription_valid_until == None:
             # Create Subscription (no subscription before)
             self.subscription_valid_until = timezone.now() + datetime.timedelta(days=days_increment)
@@ -119,6 +118,8 @@ def can_update_friend_permission(function):
 
 class Booking(Model):
     owner       = models.ForeignKey(User, related_name="bookings", on_delete=models.CASCADE)
+
+    #ipn_obj     = models.ForeignKey(User, related_name="bookings", on_delete=models.CASCADE)
 
     subscription_plan = CharField(_('Subscription Deal'), max_length=255, choices=SUBSCRIPTION_PLANS, default='0')
     payment_complete  = BooleanField(_('Payment Completed'), default=False)

@@ -12,17 +12,17 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-sm-6">
-
-      <p>{% trans "Your Subscription is valid until " %}
-        {{request.user.subscription_valid_until}}</p>
+    <div class="col-sm-9">
+      <p>
+        {% trans "Your Subscription is valid until " %}
+        {{ request.user.subscription_valid_until }}
+      </p>
     </div>
     <div class="col-sm-3">
-      {% trans "Extend 30 days" %}
-      {{ paypal30daysform.render }}
-    </div>
-    <div class="col-sm-3">
-      {% trans "Extend 365 days" %}
+      <center>
+        <h3>{% trans "Extend 30 days" %}</h3>
+        {{ paypal30daysform.render }}
+      </center>
     </div>
   </div>
 
