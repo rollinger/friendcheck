@@ -8,26 +8,55 @@
 
   <div class="row">
     <div class="col-sm-12">
-      <h2>{% trans "Your Subscription" %}:</h2>
+      {% if request.user.get_subscription_type_display == 'FREE' %}
+        <h2>{% trans "Thank you for trying our service!" %}</h2>
+      {% elif request.user.get_subscription_type_display == 'BUDDY' %}
+        <h2>{% trans "Thank you for supporting our service!" %}</h2>
+      {% elif request.user.get_subscription_type_display == 'VIP' %}
+        <h2>{% trans "You are our star! Thank you!" %}</h2>
+      {% endif %}
     </div>
   </div>
-  <div class="row">
-    <div class="col-sm-9">
-      <p>
-        {% trans "Your Subscription is valid until " %}
-        {{ request.user.subscription_valid_until }}
-      </p>
+
+  {% if request.user.get_subscription_type_display == 'FREE' %}
+    <div class="row">
+      <div class="col-sm-8">
+        <h5>{% blocktrans with request.user.datapoints_left as datapoints_left%}
+          You have <span class="badge badge-warning">{{ datapoints_left }}</span> Datapoints left in your free account.<br>
+          Please subscribe to our service and support us. Thank you!
+        {% endblocktrans %}</h5>
+      </div>
+      <div class="col-sm-4">
+        <center>
+          <h3>{% trans "Subscribe for 30 days for only 5.99 USD" %}</h3>
+          {{ paypal30daysform.render }}
+        </center>
+      </div>
     </div>
-    <div class="col-sm-3">
-      <center>
-        <h3>{% trans "Extend 30 days" %}</h3>
-        {{ paypal30daysform.render }}
-      </center>
+  {% elif request.user.get_subscription_type_display == 'BUDDY' %}
+    <div class="row">
+      <div class="col-sm-8">
+        <h5>{% blocktrans with request.user.subscription_valid_until as subscription_valid_until%}
+          Your Subscription is valid until <span class="badge badge-success">{{ subscription_valid_until }}</span>
+          <br> Thank you for your support!
+        {% endblocktrans %}</h5>
+      </div>
+      <div class="col-sm-4">
+        <center>
+          <h3>{% trans "Extend 30 days for only 5.99 USD" %}</h3>
+          {{ paypal30daysform.render }}
+        </center>
+      </div>
     </div>
-  </div>
+  {% elif request.user.get_subscription_type_display == 'VIP' %}
+    <div class="row">
+      <div class="col-sm-9">
+      </div>
+      <div class="col-sm-3">
+      </div>
+    </div>
+  {% endif %}
 
 </div>
-
-
 
 {% endblock content %}

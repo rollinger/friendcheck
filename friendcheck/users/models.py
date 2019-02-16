@@ -31,17 +31,17 @@ class User(AbstractUser):
     # First Name and Last Name do not cover name patterns around the globe.
     name = CharField(_("Name of User"), blank=True, max_length=255)
 
-    subscription_type = CharField(_('Type of Subscription'), max_length=255,choices=SUBSCRIPTION_TYPES, default='0')
+    subscription_type = CharField(_('Type of Subscription'), max_length=255, choices=SUBSCRIPTION_TYPES, default='0')
     subscription_valid_until = DateTimeField(_("Subscription valid until"), blank=True, null=True )
 
     def extend_subscription(self, days_increment):
         # Days to be extended
-        print('EXTEND SUBSCRIPTION')
-        print(days_increment)
         #days_increment = SUBSCRIPTION_PLANS_DETAILS[subscription_plan]['subscription_extention_days']
         if self.subscription_valid_until == None:
             # Create Subscription (no subscription before)
             self.subscription_valid_until = timezone.now() + datetime.timedelta(days=days_increment)
+            # Set subscription_type to 'BUDDY'
+            self.subscription_type = '1'
         elif timezone.now() > self.subscription_valid_until:
             # Renew Subscription (subscription in the past)
             self.subscription_valid_until = timezone.now() + datetime.timedelta(days=days_increment)
@@ -51,6 +51,10 @@ class User(AbstractUser):
         # Save User Object
         self.save()
 
+    def datapoints_left(self):
+        # Returns the total of datapoints left
+        val = FREE_DATAPOINTS - self.datapoints.count()
+        return val
 
     def perm_add_datapoint(self):
         # Checks if the User:
