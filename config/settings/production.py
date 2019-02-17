@@ -20,14 +20,19 @@ DATABASES['default']['CONN_MAX_AGE'] = env.int('CONN_MAX_AGE', default=60)  # no
 # ------------------------------------------------------------------------------
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': env('REDIS_URL'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': ''
+    },
+    # DISABLED - until Redis add-on can be implemented in heroku
+    #'default': {
+    #    'BACKEND': 'django_redis.cache.RedisCache',
+    #    'LOCATION': env('REDIS_URL'),
+    #    'OPTIONS': {
+    #        'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             # Mimicing memcache behavior.
             # http://niwinz.github.io/django-redis/latest/#_memcached_exceptions_behavior
-            'IGNORE_EXCEPTIONS': True,
-        }
+    #        'IGNORE_EXCEPTIONS': True,
+    #    }
     }
 }
 
