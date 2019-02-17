@@ -91,7 +91,7 @@ class UserSubscriptionView(LoginRequiredMixin, TemplateView):
                 _('Your payment attempt for your subscription was canceled!'), fail_silently=True)
         elif self.request.path == reverse('users:subscription-success'):
             messages.add_message(self.request, messages.SUCCESS,
-                _('Your payment for your subscription was successfully completed!'), fail_silently=True)
+                _('Your payment for your subscription was successfully completed! Your Subscription Date will update shortly.'), fail_silently=True)
         # Return the Context
         return context
 
