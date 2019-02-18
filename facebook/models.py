@@ -139,10 +139,11 @@ class Friend(models.Model):
 
     def get_rank_timeseries(self):
         # Returns the timeseries of rank data for the friend
-        #timestamps = [re.sub(r'\..*', '', d) for d in self.timestamps.split(', ')]
-        timestamps = [ t.strftime("%Y-%m-%d %H:%M:%S") for t in self.timestamps]
-        timeseries = {'timestamps':timestamps, 'ranks':self.ranks}
-        return timeseries
+        if self.timestamps:
+            #timestamps = [re.sub(r'\..*', '', d) for d in self.timestamps.split(', ')]
+            timestamps = [ t.strftime("%Y-%m-%d %H:%M:%S") for t in self.timestamps]
+            timeseries = {'timestamps':timestamps, 'ranks':self.ranks}
+            return timeseries
 
     def __str__(self):
         if self.name:
