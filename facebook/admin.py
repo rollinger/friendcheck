@@ -1,16 +1,28 @@
 import re
 from django.contrib import admin
 from django import forms
+from import_export.admin import ImportExportModelAdmin
+from import_export import resources
 from .models import Friend, Datapoint
 
+
+class FriendResource(resources.ModelResource):
+
+    class Meta:
+        model = Friend
+        import_id_fields = ('fbid',)
+        fields = ('fbid', 'name',)
+
 # Register your models here.
-class FriendAdmin(admin.ModelAdmin):
+class FriendAdmin(ImportExportModelAdmin):
      list_display = ["name", "fbid", 'owner', 'ranks', 'total_social_signals', \
         'total_movement', 'last_rank',]
      list_display_links = ['fbid']
      #readonly_fields = ["owner", "fbid", 'timestamps', 'ranks',]#
      search_fields = ['name','notes','fbid']
      list_filter = ['owner',]
+
+     resource_class = FriendResource
 
      actions = ['delete_timeserie_data']
 

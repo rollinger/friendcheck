@@ -20,3 +20,6 @@ coreapi==2.3.3  # https://github.com/core-api/python-client
 
 # Django PayPal
 django-paypal==0.5.0 #http://django-paypal.readthedocs.io/
+
+# Import Export
+django-import-export #https://django-import-export.readthedocs.io/en/latest/
