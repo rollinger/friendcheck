@@ -150,8 +150,9 @@ class ConfigurationManager(models.Manager):
     # def signup_is_allowed()
     # def signup_max_user_reached()
     def signup_is_invite_only(self):
-        if self.get(key='SIGNUP_INVITE_ONLY').value == "True":
-            return True
+        try:
+            if self.get(key='SIGNUP_INVITE_ONLY').value == "True":
+                return True
         return False
 
 
