@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static i18n %}
+{% load static i18n crispy_forms_tags %}
 
 {% block title %}Crush On Me{% endblock %}
 
@@ -17,8 +17,8 @@
   <div class="row spacing-300 align-items-center">
     <div class="col-sm-9"></div>
     <div class="col-sm-3">
-      <a href="#" type="button" class="btn btn-success btn-block">
-        {% trans 'Should you not KNOW?' %}
+      <a href="#signup" type="button" class="btn btn-danger btn-block">
+        {% trans 'NO, I do not know!' %}
       </a>
     </div>
   </div>
@@ -28,17 +28,17 @@
     style="background: url('{% static 'images/pages/secret-admirer.jpg' %}') no-repeat center center fixed;">
   <div class="row spacing-300"></div>
   <div class="row align-items-center">
-    <div class="col-sm-12">
+    <div class="col-sm-12 text-red">
       <center>
-        <h2><strong>{% trans 'Do you know if a lover is secretly admiring you?' %}</strong></h2>
+        <h1><strong>{% trans 'Do you know who has a crush on you?' %}</strong></h1>
       </center>
     </div>
   </div>
   <div class="row spacing-300 align-items-center">
     <div class="col-sm-9"></div>
     <div class="col-sm-3">
-      <a href="#" type="button" class="btn btn-success btn-block">
-        {% trans 'Should you not KNOW?' %}
+      <a href="#signup" type="button" class="btn btn-danger btn-block">
+        {% trans 'NO, I do not know!' %}
       </a>
     </div>
   </div>
@@ -50,37 +50,52 @@
   <div class="row align-items-center">
     <div class="col-sm-12 text-white">
       <center>
-        <h2><strong>{% trans 'Do you know who is talking behind your back?' %}</strong></h2>
+        <h1><strong>{% trans 'Do you know who is talking behind your back?' %}</strong></h1>
       </center>
     </div>
   </div>
   <div class="row spacing-300 align-items-center">
     <div class="col-sm-9"></div>
     <div class="col-sm-3">
-      <a href="#" type="button" class="btn btn-success btn-block">
-        {% trans 'Should you not KNOW?' %}
+      <a href="#signup" type="button" class="btn btn-danger btn-block">
+        {% trans 'NO, I do not know!' %}
       </a>
     </div>
   </div>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid" id="signup">
   <div class="row spacing-50"></div>
   <div class="jumbotron">
-    <h3>{% trans 'We think you should know who your friends really are!' %}</h3>
+    <h3>{% trans 'You think you should know what your friends really are to you?' %}</h3>
     <hr class="my-4">
     <div class="row">
       <div class="col-sm-6">
         <p class="lead">
           {% blocktrans %}
-          
+          We think you should know who is looking at your profile, who has a crush on you
+          and who is talking behind your back! Everyone wants that, but only a few lucky ones
+          are invited to our service.
+          <br><br>
+          You are lucky and you can know much more! We have the tool you where waiting for a long time.
+          Our deep statistical model combined with AI Technology will bring sense
+          into your social network of friends.
+          <br><br>
+          Sign In for free and see for yourself.
           {% endblocktrans %}
         </p>
       </div>
       <div class="col-sm-6">
-        <a href="#" type="button" class="btn btn-success btn-block">
-          {% trans 'Sign Up Now and try our amazing service for FREE!' %}
-        </a>
+        <h3>{% trans 'Try our amazing service for FREE!' %}</h3>
+        <hr>
+        <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+          {% csrf_token %}
+          {{ signup_form|crispy }}
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+          <button class="btn btn-primary btn-block" type="submit">{% trans 'Sign me up!' %} &raquo;</button>
+        </form>
       </div>
     </div>
   </div>

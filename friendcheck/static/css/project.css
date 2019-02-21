@@ -19,9 +19,9 @@
   background-size: cover;
 }
 
-.text-blue{
-  color: #0000ff;
-}
+.text-blue{ color: #0000ff; }
+.text-black{ color: #000000; }
+.text-red{ color: red; }
 
 .spacing-50 {height: 50px;}
 .spacing-100 {height: 100px;}
