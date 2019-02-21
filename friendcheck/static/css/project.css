@@ -28,3 +28,7 @@
 .spacing-100 {height: 100px;}
 .spacing-200 {height: 200px;}
 .spacing-300 {height: 300px;}
+
+.asteriskField {
+    display: none;
+}

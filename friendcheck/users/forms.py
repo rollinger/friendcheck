@@ -4,8 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms as django_form
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout
+from crispy_forms.layout import Submit, Layout, Field, HTML
 
+from . models import Configuration
 User = get_user_model()
 
 
@@ -21,19 +22,33 @@ class UserCreationForm(forms.UserCreationForm):
         {"duplicate_username": _("This username has already been taken.")}
     )
 
-    #invite = django_form.BooleanField(label=_("You confirm you have a valid facebook account."))
-
     def __init__(self, *args, **kwargs):
         super(forms.UserCreationForm, self).__init__(*args, **kwargs)
-        self.order_fields( ['username', 'email', 'invite_code', 'password1', 'password2','has_facebook_account','accept_terms_and_conditions'])
+        # Check Signup allowed only with invite Code
+        invite_only = Configuration.objects.signup_is_invite_only()
+        if invite_only:
+            invite_field = Field('invite_code', placeholder=_('Enter your invite code (REQUIRED)'), required="")
+        else:
+            invite_field = Field('invite_code', placeholder=_('Enter your invite code'))
         self.helper = FormHelper()
         self.helper.form_id = 'signup_form'
-        self.helper.form_class = 'signup'
+        self.helper.form_class = 'signup form-horizontal'
         self.helper.form_method = 'post'
         self.helper.form_action = 'account_signup'
-
-        self.helper.add_input(Submit('submit', _('Sign me up!'), css_class="btn btn-primary btn-block"))
-
+        self.helper.label_class = 'col-lg-4'
+        self.helper.field_class = 'col-lg-8'
+        self.helper.help_text_inline = False
+        self.helper.layout = Layout(
+            invite_field,
+            HTML('<hr>'),
+            Field('username', placeholder=_('Choose your username'), required=""),
+            Field('email', placeholder=_('Your email address'), required=""),
+            'password1',
+            'password2',
+            Field('has_facebook_account', required=""),
+            Field('accept_terms_and_conditions', required=""),
+            Submit('submit', _('Sign me up!'), css_class="btn btn-primary btn-block")
+        )
 
     class Meta(forms.UserCreationForm.Meta):
         model = User

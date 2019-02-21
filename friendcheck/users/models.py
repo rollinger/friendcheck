@@ -10,7 +10,7 @@ import datetime
 
 from . paypal_conf import PAYPAL_RECEIVER_EMAIL, SUBSCRIPTION_PLANS_DETAILS
 
-FREE_DATAPOINTS = 3
+FREE_DATAPOINTS = 5
 
 SUBSCRIPTION_TYPES = (
     ('0', 'FREE'),  # no costs; up to FREE_DATAPOINTS allowed
@@ -146,17 +146,28 @@ class Booking(Model):
             self.owner.extend_subscription(self.subscription_plan)
 
 
+class ConfigurationManager(models.Manager):
+    # def signup_is_allowed()
+    # def signup_max_user_reached()
+    def signup_is_invite_only(self):
+        if self.get(key='SIGNUP_INVITE_ONLY').value == "True":
+            return True
+        return False
+
 
 class Configuration(models.Model):
     # Configuration Storage for Site Wide Settings
     # SIGNUP ALLOWED        :: Enables, disables Signup
     # SIGNUP INVITE ONLY    :: Restricts Signup to invite codes
+    # SIGNUP_MAX_USERS      :: Restricts Signup by a number of users
     # INVITE CODES          :: List of Invite Codes 6chars long
     key     = models.CharField(_('Key'), max_length=255, unique=True)
     value   = models.TextField(_('Value'), null=True, blank=True)
 
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
+
+    objects = ConfigurationManager()
 
     def __str__(self):
         return self.key
