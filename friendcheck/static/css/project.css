@@ -24,6 +24,9 @@
 .text-red{ color: #ea4b3c; }
 .text-yellow{ color: yellow; }
 
+.transparent_white_background{background:rgba(255,255,255,0.33);}
+.transparent_black_background{background:rgba(0,0,0,0.33);}
+
 .spacing-50 {height: 50px;}
 .spacing-100 {height: 100px;}
 .spacing-200 {height: 200px;}
