@@ -153,7 +153,10 @@ class ConfigurationManager(models.Manager):
         try:
             if self.get(key='SIGNUP_INVITE_ONLY').value == "True":
                 return True
-        return False
+            else:
+                return False
+        except:
+            return False
 
 
 class Configuration(models.Model):
