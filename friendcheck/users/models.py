@@ -31,7 +31,10 @@ class User(AbstractUser):
     # First Name and Last Name do not cover name patterns around the globe.
     name = CharField(_("Name of User"), blank=True, max_length=255)
 
-    invite_code = CharField(_("Used Invite Code for Signup"), blank=True, max_length=55)
+    has_facebook_account = models.BooleanField(_('Confirm that you have a valid facebook account'), default=False)
+    accept_terms_and_conditions = models.BooleanField(_('Confirm to subscribe to the Terms and Conditions'), default=False)
+
+    invite_code = CharField(_("Invite Code for Signup"), blank=True, max_length=55)
 
     subscription_type = CharField(_('Type of Subscription'), max_length=255, choices=SUBSCRIPTION_TYPES, default='0')
     subscription_valid_until = DateTimeField(_("Subscription valid until"), blank=True, null=True )
@@ -157,7 +160,7 @@ class Configuration(models.Model):
 
     def __str__(self):
         return self.key
-        
+
     class Meta:
         verbose_name = _('Configuration')
         verbose_name_plural = _('Configurations')

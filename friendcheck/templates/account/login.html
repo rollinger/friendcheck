@@ -4,11 +4,11 @@
 {% load account socialaccount %}
 {% load crispy_forms_tags %}
 
-{% block head_title %}{% trans "Sign In" %}{% endblock %}
+{% block head_title %}{% trans "Log In" %}{% endblock %}
 
 {% block inner %}
 
-<h1>{% trans "Sign In" %}</h1>
+<h1>{% trans "Log In" %}</h1>
 
 {% get_providers as socialaccount_providers %}
 
@@ -45,4 +45,3 @@ for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
 </form>
 
 {% endblock %}
-

@@ -4,6 +4,7 @@
 {% block title %}Crush On Me{% endblock %}
 
 {% block content %}
+<div></div>
 <div class="container-fluid background-cover-image"
     style="background: url('{% static 'images/pages/crush-on-you.jpg' %}') no-repeat center center fixed; margin-top:-100px;">
   <div class="row spacing-300"></div>
@@ -17,7 +18,7 @@
   <div class="row spacing-300 align-items-center">
     <div class="col-sm-9"></div>
     <div class="col-sm-3">
-      <a href="#signup" type="button" class="btn btn-success btn-block">
+      <a href="#registration" type="button" class="btn btn-success btn-block">
         {% trans 'NO, I do not know!' %}
       </a>
     </div>
@@ -37,7 +38,7 @@
   <div class="row spacing-300 align-items-center">
     <div class="col-sm-9"></div>
     <div class="col-sm-3">
-      <a href="#signup" type="button" class="btn btn-success btn-block">
+      <a href="#registration" type="button" class="btn btn-success btn-block">
         {% trans 'NO, I do not know!' %}
       </a>
     </div>
@@ -57,32 +58,32 @@
   <div class="row spacing-300 align-items-center">
     <div class="col-sm-9"></div>
     <div class="col-sm-3">
-      <a href="#signup" type="button" class="btn btn-success btn-block">
+      <a href="#registration" type="button" class="btn btn-success btn-block">
         {% trans 'NO, I do not know!' %}
       </a>
     </div>
   </div>
 </div>
 
-<div class="container-fluid" id="signup">
+<div class="container-fluid" id="registration">
   <div class="row spacing-50"></div>
   <div class="jumbotron">
-    <h3>{% trans 'You think you should know what your friends really are to you?' %}</h3>
+    <h3>{% trans 'We think you should know what your friends are really up to!' %}</h3>
     <hr class="my-4">
     <div class="row">
       <div class="col-sm-6">
         <p class="lead">
           {% blocktrans %}
           We think you should know who is looking at your profile, who has a crush on you
-          and who is talking behind your back! Everyone wants that, but only a few lucky ones
+          or who is talking behind your back! Everyone wants to know that, but only a few lucky ones
           are invited to our service.
           <br><br>
           Today you are lucky and with us you can know so much more!
           We have the tool you where waiting for a long time.
           Our deep statistical model combined with AI Technology will bring sense
-          into your social network of friends.
+          into your network of friends.
           <br><br>
-          Sign In for free and see for yourself.
+          <center><h4>Check it out for free and start smiling...</h4></center>
           {% endblocktrans %}
         </p>
 
@@ -90,16 +91,32 @@
 
       </div>
       <div class="col-sm-6">
-        <h3>{% trans 'Try our amazing service for FREE!' %}</h3>
-        <hr>
-        <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
-          {% csrf_token %}
-          {{ signup_form|crispy }}
-          {% if redirect_field_value %}
-          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-          {% endif %}
-          <button class="btn btn-primary btn-block" type="submit">{% trans 'Sign me up!' %} &raquo;</button>
-        </form>
+        {% if request.user.is_anonymous %}
+          <h3>{% trans 'Try our amazing service for FREE!' %}</h3>
+          <hr>
+          {% crispy signup_form signup_form.helper %}
+          <!--hr>
+          <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+            {% csrf_token %}
+            {{ signup_form|crispy }}
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+            <button class="btn btn-primary btn-block" type="submit">{% trans 'Sign me up!' %} &raquo;</button>
+          </form-->
+        {% else %}
+            <h3>{% trans 'Log in:' %}</h3>
+            <hr>
+            <form class="login" method="POST" action="{% url 'account_login' %}">
+              {% csrf_token %}
+              {{ form|crispy }}
+              {% if redirect_field_value %}
+              <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+              {% endif %}
+              <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+              <button class="primaryAction btn btn-primary" type="submit">{% trans "Sign In" %}</button>
+            </form>
+        {% endif %}
       </div>
     </div>
   </div>
