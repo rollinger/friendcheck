@@ -10,13 +10,13 @@ else:
 
 
 SUBSCRIPTION_PLANS_DETAILS = {
-    'MONTHLY': {'price_usd':'11.11',
+    'MONTHLY': {'price_usd':'24.95',
         'subscription_extention_days': 30,
         'item_name': "Friendcheck Monthly Plan",},
-    'MONTHLY DISCOUNT': {'price_usd':'9.99',
+    'MONTHLY DISCOUNT': {'price_usd':'20.00',
         'subscription_extention_days': 30,
         'item_name': "Friendcheck Monthly Discount Plan",},
-    'YEARLY': {'price_usd':'108.00',
+    'YEARLY': {'price_usd':'199.00',
         'subscription_extention_days': 365,
         'item_name': "Friendcheck Yearly Plan",},
 }

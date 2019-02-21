@@ -21,7 +21,8 @@
 
 .text-blue{ color: #0000ff; }
 .text-black{ color: #000000; }
-.text-red{ color: red; }
+.text-red{ color: #ea4b3c; }
+.text-yellow{ color: yellow; }
 
 .spacing-50 {height: 50px;}
 .spacing-100 {height: 100px;}

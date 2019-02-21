@@ -31,6 +31,8 @@ class User(AbstractUser):
     # First Name and Last Name do not cover name patterns around the globe.
     name = CharField(_("Name of User"), blank=True, max_length=255)
 
+    invite_code = CharField(_("Used Invite Code for Signup"), blank=True, max_length=55)
+
     subscription_type = CharField(_('Type of Subscription'), max_length=255, choices=SUBSCRIPTION_TYPES, default='0')
     subscription_valid_until = DateTimeField(_("Subscription valid until"), blank=True, null=True )
 
@@ -139,3 +141,24 @@ class Booking(Model):
             self.save()
             # Extend subscription on the User Object
             self.owner.extend_subscription(self.subscription_plan)
+
+
+
+class Configuration(models.Model):
+    # Configuration Storage for Site Wide Settings
+    # SIGNUP ALLOWED        :: Enables, disables Signup
+    # SIGNUP INVITE ONLY    :: Restricts Signup to invite codes
+    # INVITE CODES          :: List of Invite Codes 6chars long
+    key     = models.CharField(_('Key'), max_length=255, unique=True)
+    value   = models.TextField(_('Value'), null=True, blank=True)
+
+    created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
+    updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
+
+    def __str__(self):
+        return self.key
+        
+    class Meta:
+        verbose_name = _('Configuration')
+        verbose_name_plural = _('Configurations')
+        ordering = ['-key']
