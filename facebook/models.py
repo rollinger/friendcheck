@@ -129,13 +129,20 @@ class Friend(models.Model):
 
     def get_current_movement(self,dp=1):
         # Returns the movement betwen the last dp+1 ranks
-        if self.movement and len(self.movement) >= dp:
-            return sum(self.movement[-dp:])
+        current_movement = None
+        last_date = self.owner.timeline_of_datapoints[-1]
+        if len(self.timestamps) > 1 and self.timestamps[-1] == last_date:
+            current_movement = self.movement[-1]
+        return current_movement
 
     def get_current_social_signals(self,dp=1):
         # Returns the social signals betwen the last dp+1 ranks
-        if self.social_signals and len(self.social_signals) >= dp:
-            return sum(self.social_signals[-dp:])
+        social_signals = None
+        last_date = self.owner.timeline_of_datapoints[-1]
+        if len(self.timestamps) > 1 and self.timestamps[-1] == last_date:
+            social_signals = self.social_signals[-1]
+        return social_signals
+
 
     def get_rank_timeseries(self):
         # Returns the complete timeseries of rank data for the friend
