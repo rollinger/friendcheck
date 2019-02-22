@@ -51,9 +51,18 @@ class DatapointAdmin(admin.ModelAdmin):
     actions = ['reintegrate_datapoints']
 
     def reintegrate_datapoints(self, request, queryset):
+        # Add timeline
+        timeline = []
+        #self.owner.add_timestamp_to_timeline(self.datetime)
+        # Integrate Datapoint (disable the continuous timeline)
         for datapoint in queryset:
+            timeline.append(datapoint.datetime)
             datapoint.integrated = False
             datapoint.save()
+
+        d = queryset.first()
+        d.owner.timeline_of_datapoints.extend(timeline)
+        d.owner.save()
     reintegrate_datapoints.short_description = "Reintegrate selected Datapoints"
 
 admin.site.register(Datapoint, DatapointAdmin)

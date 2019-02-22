@@ -61,6 +61,9 @@ class CreateFBDatapointView(FormView):
             ownership_check = form.cleaned_data['ownership_check']
         )
         datapoint.save()
+        # Add to users timeline_of_datapoints
+        self.request.user.timeline_of_datapoints.extend(timeline)
+        self.request.user.save()
         return super().form_valid(form)
 
     def extract_fbid_data(self, source_code):

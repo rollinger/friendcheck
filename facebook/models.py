@@ -1,7 +1,7 @@
-import json, re
+import json, re, bisect, datetime
 from itertools import tee
 
-from django.db import models
+from django.db import models,transaction
 # https://docs.djangoproject.com/en/2.1/ref/contrib/postgres/fields/
 from django.contrib.postgres.fields import ArrayField
 from django.urls import reverse
@@ -138,12 +138,27 @@ class Friend(models.Model):
             return sum(self.social_signals[-dp:])
 
     def get_rank_timeseries(self):
-        # Returns the timeseries of rank data for the friend
-        if self.timestamps:
-            #timestamps = [re.sub(r'\..*', '', d) for d in self.timestamps.split(', ')]
-            timestamps = [ t.strftime("%Y-%m-%d %H:%M:%S") for t in self.timestamps]
-            timeseries = {'timestamps':timestamps, 'ranks':self.ranks}
-            return timeseries
+        # Returns the complete timeseries of rank data for the friend
+        timestamps = []
+        ranks = []
+
+        for idx, t in enumerate( self.owner.timeline_of_datapoints ):
+            timestamps.append( t.strftime("%Y-%m-%d %H:%M:%S") )
+            index = None
+            # Get the index of the date for rank retrieval
+            try:
+                if t in self.timestamps:
+                    index = self.timestamps.index( self.owner.timeline_of_datapoints[idx] )
+            except:
+                index = None
+
+            if index != None:
+                # Has Data
+                ranks.append(self.ranks[index])
+            else:
+                # Has no data - 'none' suppress point in chartjs
+                ranks.append('none')
+        return {'timestamps':timestamps, 'ranks':ranks}
 
     def __str__(self):
         if self.name:
@@ -197,12 +212,15 @@ class Datapoint(models.Model):
         seen = set()
         seen_add = seen.add
         fbid_list = [x for x in data if not (x in seen or seen_add(x))]
+        #for fbid in data:
+        #    if not fbid in fbid_list:
+        #        fbid_list.append( fbid )
 
         # Adds each datapoints to Friends or updates it if the timestamp present.
         for rank, fbid in enumerate(fbid_list):
             #print('%s:%d' % (fbid,rank+1) )
             friend, created = Friend.objects.get_or_create(owner=self.owner,fbid=fbid)
-            friend.add_datapoint(timestamp=self.datetime,rank=rank+1)
+            friend.add_datapoint( timestamp=self.datetime, rank=rank+1 )
 
     def save(self, *args, **kwargs):
         super(Datapoint, self).save(*args, **kwargs)
@@ -212,7 +230,9 @@ class Datapoint(models.Model):
         #   - Ownership check == True
         #   - Integrated == False (becomes True after integration)
         if self.fbid_data and self.ownership_check == True and self.integrated == False:
+            # Integrate the datapoint into friends
             self.integrate_datapoint()
+            # Set to integrated and Save
             self.integrated=True
             super(Datapoint, self).save(*args, **kwargs)
 

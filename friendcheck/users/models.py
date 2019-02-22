@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Model, CharField, DateTimeField, BooleanField
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
@@ -39,6 +40,8 @@ class User(AbstractUser):
     subscription_type = CharField(_('Type of Subscription'), max_length=255, choices=SUBSCRIPTION_TYPES, default='0')
     subscription_valid_until = DateTimeField(_("Subscription valid until"), blank=True, null=True )
 
+    timeline_of_datapoints  = ArrayField(DateTimeField(), null=True, blank=True)
+
     def extend_subscription(self, days_increment):
         # Days to be extended
         #days_increment = SUBSCRIPTION_PLANS_DETAILS[subscription_plan]['subscription_extention_days']
@@ -60,6 +63,23 @@ class User(AbstractUser):
         # Returns the total of datapoints left
         val = FREE_DATAPOINTS - self.datapoints.count()
         return val
+
+    def add_timestamp_to_timeline(self, timestamp):
+        # Adds the timestamp to the continuous timeline of datapoints
+        #if len(self.timeline_of_datapoints) < 1:
+        #    self.timeline_of_datapoints = []
+            #self.save()
+            #self.refresh_from_db()
+            #print('NEW')
+            #print(self.timeline_of_datapoints)
+        self.timeline_of_datapoints.extend( [timestamp] )
+        self.save()
+
+        #self.save(update_fields=('timeline_of_datapoints',))
+        #print('APPEND')
+        #print(self.timeline_of_datapoints)
+
+        #print(self.timeline_of_datapoints)
 
     def perm_add_datapoint(self):
         # Checks if the User:

@@ -16,8 +16,9 @@ class UserAdmin(auth_admin.UserAdmin):
     add_form = UserCreationForm
 
     fieldsets = (("User", {"fields": ("name", "has_facebook_account", \
-        "accept_terms_and_conditions", "invite_code", "subscription_type", \
-        "subscription_valid_until")}),) + auth_admin.UserAdmin.fieldsets
+        "accept_terms_and_conditions", "invite_code",)}),
+        ("Subscription",{"fields":( "subscription_type", "subscription_valid_until")}), 
+        ("Timeline",{"fields":("timeline_of_datapoints",)}),) + auth_admin.UserAdmin.fieldsets
     list_display = ["username", "name", "is_superuser", "subscription_type", "subscription_valid_until"]
     search_fields = ["name"]
 
