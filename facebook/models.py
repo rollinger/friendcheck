@@ -200,6 +200,9 @@ class Friend(models.Model):
         unique_together = ("owner","fbid")
 
 
+class DatapointManager(models.Manager):
+    pass
+
 class Datapoint(models.Model):
     owner       = models.ForeignKey(User, related_name="datapoints", on_delete=models.CASCADE)
 
@@ -217,6 +220,8 @@ class Datapoint(models.Model):
 
     created_at  = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at  = models.DateTimeField(_('Updated at'), auto_now=True)
+
+    objects = DatapointManager()
 
     def __str__(self):
         return "%s: %s" % (self.owner.username, self.datetime)

@@ -164,8 +164,8 @@
                     {% for timestamp in data.timestamps %}
                       {
                         x: '{{ timestamp }}',
-                        y: {{ data.ranks|index:forloop.counter0 }}
-                      },
+                        y: '{{ data.ranks|index:forloop.counter0 }}'
+                      },//|default_if_none:'none'
                     {% endfor %}
                     {% endwith %}
                   ],

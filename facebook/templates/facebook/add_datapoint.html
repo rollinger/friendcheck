@@ -10,30 +10,42 @@
       <h1>{% trans 'Add New Datapoint:' %}</h1>
     </div>
   </div>
-  <div class="row">
+  <div class="row align-items-center">
     <div class="col-sm-6">
-      <form class="form-horizontal" method="post" action="{% url 'facebook:add_datapoint' %}">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <div class="control-group">
-          <div class="controls">
-            <button type="submit" class="btn btn-success btn-block">
-              {% trans 'Add New Datapoint' %}
-            </button>
+      {% if request.user.time_freeze_add_datapoint_reached %}
+        <form class="form-horizontal" method="post" action="{% url 'facebook:add_datapoint' %}">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <div class="control-group">
+            <div class="controls">
+              <button type="submit" class="btn btn-success btn-block">
+                {% trans 'Add New Datapoint' %}
+              </button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      {% else %}
+      <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">{% trans 'Currently not possible!' %}</h4>
+        <p>{% trans 'Last Datapoint is less than 24 hours old. Come back later:' %}</p>
+        <hr>
+        <p class="mb-0">
+          <center><strong>{{ request.user.time_next_datapoint_can_be_added }}</strong></center>
+        </p>
+      </div>
+
+      {% endif %}
     </div>
     <div class="col-sm-6">
       <ul class="nav nav-tabs" id="addDatapointTab" role="tablist">
         <li class="nav-item">
           <a class="nav-link active" id="addhelp-tab" data-toggle="tab" href="#addhelp" role="tab" aria-controls="home" aria-selected="true">
-            <h6>{% trans 'How to add the a datapoint' %}</h6>
+            <h6>{% trans 'HowTo' %}</h6>
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" id="disclaimer-tab" data-toggle="tab" href="#disclaimer" role="tab" aria-controls="home" aria-selected="false">
-            <h6>{% trans 'Security & Disclaimer' %}</h6>
+            <h6>{% trans 'Disclaimer' %}</h6>
           </a>
         </li>
       </ul>

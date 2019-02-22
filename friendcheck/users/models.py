@@ -12,6 +12,7 @@ import datetime
 from . paypal_conf import PAYPAL_RECEIVER_EMAIL, SUBSCRIPTION_PLANS_DETAILS
 
 FREE_DATAPOINTS = 5
+TIME_BETWEEN_ADD_DATAPOINTS = 24*60*60
 
 SUBSCRIPTION_TYPES = (
     ('0', 'FREE'),  # no costs; up to FREE_DATAPOINTS allowed
@@ -81,11 +82,31 @@ class User(AbstractUser):
 
         #print(self.timeline_of_datapoints)
 
+    def time_since_last_datapoint_added(self):
+        # Returns seconds since last add_datapoint
+        #abs((d2 - d1).days)
+        td = abs( timezone.now() - self.timeline_of_datapoints[-1])
+        return td.total_seconds()
+
+    def time_freeze_add_datapoint_reached(self):
+        # Check if last datapoint is older than 24 hours
+        try:
+            if self.time_since_last_datapoint_added() <= TIME_BETWEEN_ADD_DATAPOINTS:
+                return False
+        except: # not found
+            pass
+        return True
+
+    def time_next_datapoint_can_be_added(self):
+        seconds = TIME_BETWEEN_ADD_DATAPOINTS - self.time_since_last_datapoint_added()
+        return str( datetime.timedelta(seconds=seconds) ).split('.')[0]
+
     def perm_add_datapoint(self):
         # Checks if the User:
         #   - is not authenticated
         #   - has FREE_DATAPOINTS (3) already used
         #   - the subscription_valid_until date is in the past
+        #   - has added a datapoint in the last 24 hours
         # Returns False if any of the above are True
         # Gives Permission otherwise.
         if not self.is_authenticated:

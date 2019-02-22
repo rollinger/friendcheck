@@ -68,7 +68,7 @@ class CreateFBDatapointView(FormView):
         )
         datapoint.save()
         # Add to users timeline_of_datapoints
-        self.request.user.timeline_of_datapoints.extend(timeline)
+        self.request.user.timeline_of_datapoints.extend([datapoint.datetime])
         self.request.user.save()
         return super().form_valid(form)
 
