@@ -34,6 +34,10 @@ class Friend(models.Model):
     avatar      = models.ImageField(_('Friend Avatar'),
                 upload_to='Friends/', null=True, blank=True)
 
+    comparison  = models.BooleanField(_('Add to comparison chart'), default=False)
+
+    # Statistics
+
     timestamps  = ArrayField(models.DateTimeField(),null=True, blank=True)
 
     ranks       = ArrayField(models.IntegerField(),null=True, blank=True)

@@ -26,16 +26,17 @@
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="howto-tab" data-toggle="tab" href="#howto" role="tab" aria-controls="home" aria-selected="false">
-        <h6>{% trans 'HowTo' %}</h6>
-      </a>
-    </li>
-    <!--li class="nav-item">
-      <a class="nav-link" id="chart-tab" data-toggle="tab" href="#chart-rank-50" role="tab" aria-controls="home" aria-selected="false">
-        {% trans 'Top 5 Ranks' %}
+      <a class="nav-link" id="comparison-tab" data-toggle="tab" href="#comparison-chart" role="tab" aria-controls="home" aria-selected="false">
+        <h6>{% trans 'Comparison' %}</h6>
       </a>
     </li>
     <li class="nav-item">
+      <a class="nav-link" id="help-tab" data-toggle="tab" href="#help" role="tab" aria-controls="home" aria-selected="false">
+        <h6>{% trans 'Help' %}</h6>
+      </a>
+    </li>
+
+    <!--li class="nav-item">
       <a class="nav-link" id="chart-tab" data-toggle="tab" href="#chart-movement-50" role="tab" aria-controls="home" aria-selected="false">
         {% trans 'Top 5 Movement' %}
       </a>
@@ -100,7 +101,7 @@
       </table>
     </div>
 
-    <div class="tab-pane fade" id="howto" role="tabpanel" aria-labelledby="howto-tab">
+    <div class="tab-pane fade" id="help" role="tabpanel" aria-labelledby="howto-tab">
       <div class="container">
         <div class="row">
           <div class="col-sm-12">
@@ -138,17 +139,17 @@
       </div>
     </div>
 
-    <!--div class="tab-pane fade" id="chart-rank-50" role="tabpanel" aria-labelledby="chart-tab">
-      <h3>{% trans 'Top 5 Ranks' %}</h3>
-      <canvas id="top5RankChart"></canvas>
+    <div class="tab-pane fade" id="comparison-chart" role="tabpanel" aria-labelledby="chart-tab">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+      <h3>{% trans 'Comparison Chart' %}</h3>
+      <canvas id="comparisonChart"></canvas>
       <script>
-          var ctx = document.getElementById("top5RankChart");
-          var top5RankChart = new Chart(ctx, {
+          var ctx = document.getElementById("comparisonChart");
+          var comparisonChart = new Chart(ctx, {
             type: 'line',
             data: {
-              //labels: {{ friend_list.1.get_rank_timeseries.timestamps|safe }},
               datasets: [
-              {% for friend in friend_list|slice:":5 " %}
+              {% for friend in comparison_list %}
                 {
                   label: '{{friend}} Rank',
                   fill: false,
@@ -159,12 +160,14 @@
                   pointHoverRadius: 12,
                   //data: {{ friend.get_rank_timeseries.ranks|safe }},
                   data: [
-                    {% for datapoint in friend.get_rank_timeseries.timestamps %}
+                    {% with friend.get_rank_timeseries as data %}
+                    {% for timestamp in data.timestamps %}
                       {
-                        x: '{{ datapoint }}',
-                        y: {{ friend.get_rank_timeseries.ranks|index:forloop.counter0 }}
+                        x: '{{ timestamp }}',
+                        y: {{ data.ranks|index:forloop.counter0 }}
                       },
                     {% endfor %}
+                    {% endwith %}
                   ],
                 },
               {% endfor %}
@@ -175,7 +178,7 @@
               responsive: true,
               title: {
                 display: true,
-                text: 'Rank Timeseries'
+                text: 'Comparison Rank Timeseries'
               },
               legend: {
                 display: false,
@@ -214,14 +217,14 @@
       {% if debug %}
       <div class="row">
         <div class="col-sm-12">
-          {% for friend in friend_list|slice:":5 " %}
-            {% for datapoint in friend.get_rank_timeseries.timestamps %}
-              {{ friend }}</br>
-              {{ datapoint }}: {{ friend.get_rank_timeseries.ranks|index:forloop.counter0 }}
-              </br>
+          {% for friend in comparison_list %}
+            {{ friend }}<br/>
+            {% with friend.get_rank_timeseries as data %}
+            {% for timestamp in data.timestamps %}
+              {{ timestamp }} :: {{ data.ranks|index:forloop.counter0 }}
             {% endfor %}
-            {{ friend.get_rank_timeseries.timestamps }}
-            {{ friend.get_rank_timeseries.ranks }}<br/>
+            {% endwith %}
+            <br/>
           {% endfor %}
         </div>
       </div>
@@ -231,7 +234,7 @@
     </div>
 
 
-    <div class="tab-pane fade" id="chart-movement-50" role="tabpanel" aria-labelledby="chart-tab">
+    <!--div class="tab-pane fade" id="chart-movement-50" role="tabpanel" aria-labelledby="chart-tab">
       <h3>{% trans 'Top 5 Movement' %}</h3>
       <canvas id="top5MovementChart"></canvas>
     </div-->

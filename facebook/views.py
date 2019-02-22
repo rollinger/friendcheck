@@ -32,6 +32,12 @@ class FBOverviewView(LoginRequiredMixin, ListView):
         object_list = Friend.objects.filter(owner=self.request.user).order_by('last_rank')
         return object_list
 
+    def get_context_data(self, **kwargs):
+        # we get context data from original view
+        context = super(FBOverviewView, self).get_context_data(**kwargs)
+        context['comparison_list'] = Friend.objects.filter(owner=self.request.user, comparison=True)
+        return context
+
 facebook_overview_view = FBOverviewView.as_view()
 
 

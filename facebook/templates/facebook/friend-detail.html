@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags static i18n %}
 
-{% block title %}Friend{% endblock %}
+{% block title %}
+  {% trans 'Friend' %}:
+  {{ object.name|default_if_none:"--" }}
+{% endblock %}
 
 {% block content %}
 <div class="container">
