@@ -1,4 +1,4 @@
-import json, re, bisect, datetime
+import json, re, random, datetime
 from itertools import tee
 
 from django.db import models,transaction
@@ -19,6 +19,13 @@ def pairwise(iterable):
     next(b, None)
     return zip(a, b)
 
+def generate_random_color():
+    letters = '0123456789ABCDEF'
+    color = '#'
+    for _ in range(6):
+        color += letters[random.randint(0,15)];
+    return color
+
 
 class Friend(models.Model):
     owner       = models.ForeignKey(User, related_name="friends", on_delete=models.CASCADE)
@@ -36,7 +43,8 @@ class Friend(models.Model):
 
     comparison  = models.BooleanField(_('Add to comparison chart'), default=False)
 
-    # Statistics
+    # Statistics & Charts
+    color       = models.CharField(_('Color of Chart'), max_length=7, default=generate_random_color)
 
     timestamps  = ArrayField(models.DateTimeField(),null=True, blank=True)
 

@@ -8,8 +8,8 @@ from facebook.models import Friend
 class FriendUpdateForm(forms.ModelForm):
     class Meta:
         model = Friend
-        fields = ['name', 'comparison', 'avatar',]
-        # TODO: Add notes &  add_to_watchlist
+        fields = ['name', 'comparison', 'avatar', 'color']
+        # TODO: Add notes & Tags
 
 class FacebookDatapointForm(forms.Form):
     facebook_source_code = forms.CharField(

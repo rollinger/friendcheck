@@ -3,7 +3,7 @@ from django.contrib import admin
 from django import forms
 from import_export.admin import ImportExportModelAdmin
 from import_export import resources
-from .models import Friend, Datapoint
+from .models import Friend, Datapoint, generate_random_color
 
 
 class FriendResource(resources.ModelResource):
@@ -24,7 +24,7 @@ class FriendAdmin(ImportExportModelAdmin):
 
      resource_class = FriendResource
 
-     actions = ['delete_timeserie_data']
+     actions = ['delete_timeserie_data', 'randomize_colors']
 
      def delete_timeserie_data(self, request, queryset):
          for friend in queryset:
@@ -36,7 +36,13 @@ class FriendAdmin(ImportExportModelAdmin):
              friend.social_signals = None
              friend.total_social_signals = None
              friend.save()
-     delete_timeserie_data.short_description = "Clear the timeserie of selected Friends"
+     delete_timeserie_data.short_description = "Clear the timeserie of selected friends"
+
+     def randomize_colors(self, request, queryset):
+         for friend in queryset:
+             friend.color = generate_random_color()
+             friend.save()
+     randomize_colors.short_description = "Randomize the Chart Colors of selected friends"
 
 admin.site.register(Friend, FriendAdmin)
 
