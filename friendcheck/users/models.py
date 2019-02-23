@@ -208,7 +208,7 @@ class ConfigurationManager(models.Manager):
 
     def signup_max_user_reached(self):
         try:
-            if Users.objects.all().count() >= int( self.get(key='SIGNUP_MAX_USERS').value ):
+            if User.objects.filter(is_active=True).count() >= int( self.get(key='SIGNUP_MAX_USERS').value ):
                 return True
             else:
                 return False
@@ -216,7 +216,7 @@ class ConfigurationManager(models.Manager):
             return False
 
     def signup_is_open(self):
-        if self.signup_is_allowed() and not self.signup_max_user_reached():
+        if self.signup_is_allowed() == True and self.signup_max_user_reached() == False:
             return True
         return False
 

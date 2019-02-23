@@ -3,6 +3,7 @@ from django.views.generic.edit import FormView
 # https://github.com/pennersr/django-allauth
 from allauth.account.forms import LoginForm
 from friendcheck.users.forms import UserCreationForm
+from friendcheck.users.models import Configuration
 
 class HomeLandingPage(TemplateView):
     template_name = 'pages/home.html'
@@ -11,6 +12,7 @@ class HomeLandingPage(TemplateView):
     def get_context_data(self, **kwargs):
         # we get context data from original view
         context = super(HomeLandingPage, self).get_context_data(**kwargs)
+        context['signup_is_open'] = Configuration.objects.signup_is_open()
         context['signup_form'] = UserCreationForm() # add form to context
         context['login_form'] = LoginForm() # add form to context
         return context

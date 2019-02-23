@@ -12,7 +12,7 @@ class AccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request: HttpRequest):
         open = False
         if getattr(settings, "ACCOUNT_ALLOW_REGISTRATION", True):
-            open = Configuration.objects.signup_is_allowed()
+            open = Configuration.objects.signup_is_open()
         return open
 
 
