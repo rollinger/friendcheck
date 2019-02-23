@@ -1,4 +1,5 @@
 from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
 # https://github.com/pennersr/django-allauth
 from allauth.account.forms import LoginForm
 from friendcheck.users.forms import UserCreationForm
@@ -15,3 +16,9 @@ class HomeLandingPage(TemplateView):
         return context
 
 home_landing_page = HomeLandingPage.as_view()
+
+
+
+class TermsAndConditionsView(TemplateView):
+    pass
+terms_and_conditions = TermsAndConditionsView.as_view()

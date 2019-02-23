@@ -95,15 +95,6 @@
           <h3>{% trans 'Try our amazing service for FREE!' %}</h3>
           <hr>
           {% crispy signup_form signup_form.helper %}
-          <!--hr>
-          <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
-            {% csrf_token %}
-            {{ signup_form|crispy }}
-            {% if redirect_field_value %}
-            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-            {% endif %}
-            <button class="btn btn-primary btn-block" type="submit">{% trans 'Sign me up!' %} &raquo;</button>
-          </form-->
         {% else %}
             <h3>{% trans 'Log in:' %}</h3>
             <hr>

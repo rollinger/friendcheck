@@ -21,6 +21,9 @@ class UserCreationForm(forms.UserCreationForm):
     error_message = forms.UserCreationForm.error_messages.update(
         {"duplicate_username": _("This username has already been taken.")}
     )
+    error_message = forms.UserCreationForm.error_messages.update(
+        {"wrong_invite_code": _("The entered invite code is not valid.")}
+    )
 
     def __init__(self, *args, **kwargs):
         super(forms.UserCreationForm, self).__init__(*args, **kwargs)
@@ -64,3 +67,15 @@ class UserCreationForm(forms.UserCreationForm):
             return username
 
         raise ValidationError(self.error_messages["duplicate_username"])
+
+    def clean_invite_code(self):
+        # Checks if the invite code is correct
+        invite_only = Configuration.objects.signup_is_invite_only()
+        invite_code = self.cleaned_data["invite_code"]
+
+        #try:
+        #    User.objects.get(username=username)
+        #except User.DoesNotExist:
+        #    return username
+
+        raise ValidationError(self.error_messages["wrong_invite_code"])

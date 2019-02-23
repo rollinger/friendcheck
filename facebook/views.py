@@ -35,7 +35,9 @@ class FBOverviewView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         # we get context data from original view
         context = super(FBOverviewView, self).get_context_data(**kwargs)
-        context['comparison_list'] = Friend.objects.filter(owner=self.request.user, comparison=True)
+        #Friend.objects.filter(owner=self.request.user, comparison=True)
+        context['comparison_list'] = context['object_list'].filter(comparison=True)
+
         return context
 
 facebook_overview_view = FBOverviewView.as_view()

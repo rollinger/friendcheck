@@ -30,8 +30,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
 
     # Your stuff: custom urls includes go here
-
-    #path(r'^paypal/', include('paypal.standard.ipn.urls')),
+    
     path('paypal/', include('paypal.standard.ipn.urls')),
 
 ] + static(

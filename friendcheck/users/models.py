@@ -188,7 +188,7 @@ class Booking(Model):
 
 
 class ConfigurationManager(models.Manager):
-    # def signup_is_allowed()
+
     # def signup_max_user_reached()
     def signup_is_invite_only(self):
         try:
@@ -199,6 +199,14 @@ class ConfigurationManager(models.Manager):
         except:
             return False
 
+    def signup_is_allowed(self):
+        try:
+            if self.get(key='SIGNUP_ALLOWED').value == "True":
+                return True
+            else:
+                return False
+        except:
+            return False
 
 class Configuration(models.Model):
     # Configuration Storage for Site Wide Settings
