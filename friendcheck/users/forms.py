@@ -27,6 +27,9 @@ class UserCreationForm(forms.UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(forms.UserCreationForm, self).__init__(*args, **kwargs)
+        # Set the ToC & PP label
+        toc_label = _('I agree to the <a href="/terms_and_conditions/" target="_blank">Terms and Conditions</a> and <a href="/privacy_policy/" target="_blank">Privacy Policy</a> of this website.')
+        self.fields['accept_terms_and_conditions'].label = toc_label
         # Check Signup allowed only with invite Code
         invite_only = Configuration.objects.signup_is_invite_only()
         if invite_only:

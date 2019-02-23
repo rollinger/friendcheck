@@ -33,8 +33,8 @@ class User(AbstractUser):
     # First Name and Last Name do not cover name patterns around the globe.
     name = CharField(_("Name of User"), blank=True, max_length=255)
 
-    has_facebook_account = models.BooleanField(_('Confirm that you have a valid facebook account'), default=False)
-    accept_terms_and_conditions = models.BooleanField(_('Confirm to subscribe to the Terms and Conditions'), default=False)
+    has_facebook_account = models.BooleanField(_('I confirm that I have a valid facebook account.'), default=False)
+    accept_terms_and_conditions = models.BooleanField(_('I agree to the Terms and Conditions and Privacy Policy of this website.'), default=False)
 
     invite_code = CharField(_("Invite Code for Signup"), blank=True, max_length=55)
 

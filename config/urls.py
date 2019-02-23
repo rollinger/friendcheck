@@ -5,15 +5,22 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
 
-from friendcheck.views import home_landing_page
+from friendcheck.views import home_landing_page, terms_and_conditions, privacy_policy
 
 urlpatterns = [
     path("", view=home_landing_page, name="home"),
 
-    path(
-        "about/",
+    path("about/",
         TemplateView.as_view(template_name="pages/about.html"),
         name="about",
+    ),
+    path("terms_and_conditions/",
+        terms_and_conditions,
+        name="terms_and_conditions",
+    ),
+    path("privacy_policy/",
+        privacy_policy,
+        name="privacy_policy",
     ),
     path(
         "facebook/",
@@ -30,7 +37,7 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
 
     # Your stuff: custom urls includes go here
-    
+
     path('paypal/', include('paypal.standard.ipn.urls')),
 
 ] + static(

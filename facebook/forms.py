@@ -16,5 +16,5 @@ class FacebookDatapointForm(forms.Form):
         label=_('Paste here the whole source code of your logged in facebook main page.'),
         widget=forms.Textarea)
     ownership_check = forms.BooleanField(
-        label=_('I confirm that the data is mine and I agree to the Terms and Conditions of this Website.'),
+        label=_('I agree to the <a href="/terms_and_conditions/" target="_blank">Terms and Conditions</a> and <a href="/privacy_policy/" target="_blank">Privacy Policy</a> of this website and I want to upload my data for private, educational purposes.'),
         required=True)

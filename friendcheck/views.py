@@ -22,5 +22,9 @@ home_landing_page = HomeLandingPage.as_view()
 
 
 class TermsAndConditionsView(TemplateView):
-    pass
+    template_name = 'pages/terms_and_conditions.html'
 terms_and_conditions = TermsAndConditionsView.as_view()
+
+class PrivacyPolicyView(TemplateView):
+    template_name = 'pages/privacy_policy.html'
+privacy_policy = PrivacyPolicyView.as_view()
