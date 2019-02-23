@@ -188,8 +188,6 @@ class Booking(Model):
 
 
 class ConfigurationManager(models.Manager):
-
-    # def signup_max_user_reached()
     def signup_is_invite_only(self):
         try:
             if self.get(key='SIGNUP_INVITE_ONLY').value == "True":
@@ -207,6 +205,20 @@ class ConfigurationManager(models.Manager):
                 return False
         except:
             return False
+
+    def signup_max_user_reached(self):
+        try:
+            if Users.objects.all().count() >= int( self.get(key='SIGNUP_MAX_USERS').value ):
+                return True
+            else:
+                return False
+        except:
+            return False
+
+    def signup_is_open(self):
+        if self.signup_is_allowed() and not self.signup_max_user_reached():
+            return True
+        return False
 
 class Configuration(models.Model):
     # Configuration Storage for Site Wide Settings

@@ -1,3 +1,4 @@
+# DOC: https://docs.djangoproject.com/en/1.10/howto/custom-template-tags/
 from django import template
 from facebook.models import Friend
 
@@ -10,4 +11,6 @@ def get_statistics(friend, last_date):
 
 @register.filter
 def index(List, i):
-    return List[int(i)]
+    if List:
+        return List[int(i)]
+    return None

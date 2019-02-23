@@ -70,12 +70,32 @@ class UserCreationForm(forms.UserCreationForm):
 
     def clean_invite_code(self):
         # Checks if the invite code is correct
+        # and removes it from the global list
         invite_only = Configuration.objects.signup_is_invite_only()
-        invite_code = self.cleaned_data["invite_code"]
+        if invite_only:
+            invite_code = self.cleaned_data["invite_code"]
+            invite_code_correct = False
+            try:
+                global_codes = Configuration.objects.get(key="INVITE_CODES")
+                if len(invite_code) == 5 and invite_code in global_codes.value:
+                    invite_code_correct = True
+            except:
+                invite_code_correct = False
 
-        #try:
-        #    User.objects.get(username=username)
-        #except User.DoesNotExist:
-        #    return username
+            # Return Invite Code or raise Validation Error
+            if invite_code_correct:
+                return invite_code
+            raise ValidationError(self.error_messages["wrong_invite_code"])
+        else:
+            # Not Invite Only: return empty string
+            return ""
 
-        raise ValidationError(self.error_messages["wrong_invite_code"])
+    def signup(self, request, user):
+        # Remove invite code from configuration
+        global_codes = Configuration.objects.get(key="INVITE_CODES")
+        global_codes.value = global_codes.value.replace(self.cleaned_data['invite_code']+', ','',1)
+        global_codes.save()
+        # Set User Data and save
+        user.username = self.cleaned_data['username']
+        user.invite_code = self.cleaned_data['invite_code']
+        user.save()

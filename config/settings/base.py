@@ -248,6 +248,8 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# https://stackoverflow.com/questions/12303478/how-to-customize-user-profile-when-using-django-allauth
+ACCOUNT_SIGNUP_FORM_CLASS = 'friendcheck.users.forms.UserCreationForm'
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_ADAPTER = 'friendcheck.users.adapters.AccountAdapter'
 # https://django-allauth.readthedocs.io/en/latest/configuration.html

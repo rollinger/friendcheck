@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static i18n crispy_forms_tags %}
+{% load static i18n crispy_forms_tags signup_tags %}
 
 {% block title %}Crush Like Me{% endblock %}
 
@@ -19,7 +19,7 @@
     <div class="col-sm-9"></div>
     <div class="col-sm-3">
       <a href="#registration" type="button" class="btn btn-success btn-block">
-        {% trans 'NO, I do not know!' %}
+        {% trans 'No!' %}
       </a>
     </div>
   </div>
@@ -31,7 +31,7 @@
   <div class="row align-items-center">
     <div class="col-sm-12 text-red">
       <center>
-        <h1 class="transparent_black_background"><strong>{% trans 'Do you know who has a crush on you?' %}</strong></h1>
+        <h1 class="transparent_white_background"><strong>{% trans 'Do you know who has a crush on you?' %}</strong></h1>
       </center>
     </div>
   </div>
@@ -39,7 +39,7 @@
     <div class="col-sm-9"></div>
     <div class="col-sm-3">
       <a href="#registration" type="button" class="btn btn-success btn-block">
-        {% trans 'NO, I do not know!' %}
+        {% trans 'No!' %}
       </a>
     </div>
   </div>
@@ -59,7 +59,7 @@
     <div class="col-sm-9"></div>
     <div class="col-sm-3">
       <a href="#registration" type="button" class="btn btn-success btn-block">
-        {% trans 'NO, I do not know!' %}
+        {% trans 'No!' %}
       </a>
     </div>
   </div>
@@ -92,9 +92,15 @@
       </div>
       <div class="col-sm-6">
         {% if request.user.is_anonymous %}
-          <h3>{% trans 'Try our amazing service for FREE!' %}</h3>
-          <hr>
-          {% crispy signup_form signup_form.helper %}
+          {% if signup_is_open %}
+            <h3>{% trans 'Try our amazing service for FREE!' %}</h3>
+            <hr>
+            {% crispy signup_form signup_form.helper %}
+          {% else %}
+            <h3>{% trans "Sign Up Closed" %}</h3>
+            <hr>
+            <p>{% trans "We are sorry, but the sign up is currently closed." %}</p>
+          {% endif %}
         {% else %}
             <h3>{% trans 'Log in:' %}</h3>
             <hr>
