@@ -89,6 +89,8 @@ class User(AbstractUser):
         return td.total_seconds()
 
     def time_freeze_add_datapoint_reached(self):
+        #if self.is_superuser:
+        #    return True
         # Check if last datapoint is older than 24 hours
         try:
             if self.time_since_last_datapoint_added() <= TIME_BETWEEN_ADD_DATAPOINTS:

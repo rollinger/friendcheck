@@ -80,11 +80,11 @@
 
             {% get_statistics friend last_date as friend_stats %}
             <tr>
-              <td scope="row">{{ friend_stats.last_rank|default_if_none:"--" }} </td>
-              <td>{{ friend_stats.total_movement|default_if_none:"--" }}</td>
-              <td>{{ friend_stats.get_current_movement|default_if_none:"--" }}</td>
-              <td>{{ friend_stats.total_social_signals|default_if_none:"--" }}</td>
-              <td>{{ friend_stats.get_current_social_signals|default_if_none:"--" }}</td>
+              <td scope="row">{{ friend_stats.last_rank|default_if_none:"0" }} </td>
+              <td>{{ friend_stats.total_movement|default_if_none:"0"}}</td>
+              <td>{{ friend_stats.get_current_movement|default_if_none:"0" }}</td>
+              <td>{{ friend_stats.total_social_signals|default_if_none:"0" }}</td>
+              <td>{{ friend_stats.get_current_social_signals|default_if_none:"0" }}</td>
               <td>
                 {% if friend.avatar %}
                     <img src="{{ MEDIA_URL }}{{ friend.avatar }}" alt="{{ friend.name }}" class="img-rounded img-responsive center-block" style="max-width:120px;">
